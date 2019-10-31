@@ -1,0 +1,31 @@
+<?xml version="1.0"?>
+
+<launch>
+
+    <!-- run pointcloud_to_laserscan node -->
+    <node pkg="pointcloud_to_laserscan" type="pointcloud_to_laserscan_node" name="pointcloud_to_laserscan" output="screen">
+        <rosparam>
+            target_frame: base_link # Leave disabled to output scan in pointcloud frame
+            transform_tolerance: 1
+            min_height: -3
+            max_height: 3
+
+            angle_min: -3.14159 # -M_PI/2
+            angle_max: 3.14159 # M_PI/2
+            angle_increment: 0.01 # M_PI/360.0
+            scan_time: 0
+            range_min: 0
+            range_max: 100
+            use_inf: true
+            inf_epsilon: 1.0
+
+            # Concurrency level, affects number of pointclouds queued for processing and number of threads used
+            # 0 : Detect number of cores
+            # 1 : Single threaded
+            # 2->inf : Parallelism level
+            concurrency_level: 4
+        </rosparam>
+
+    </node>
+
+</launch>
