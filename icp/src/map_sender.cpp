@@ -21,7 +21,7 @@ pcl::PointCloud<pcl::PointXYZ>::Ptr map_cld(new pcl::PointCloud<pcl::PointXYZ>);
 
 int main (int argc, char** argv)
 {
-	ros::init(argc, argv, "listener");
+	ros::init(argc, argv, "map_publisher");
     // ros::package::getPath('PKG_NAME')
     pcl::io::loadPCDFile<pcl::PointXYZ> ("/home/shreyanshdarshan/Localization/catkin_ws/src/premapped_localization/icp/src/map.pcd", *map_cld);
 	ros::NodeHandle n;

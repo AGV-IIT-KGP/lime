@@ -221,3 +221,9 @@ target_link_libraries(map_sender
   ${roslib_LIBRARIES}
   ${PCL_LIBRARIES}
 )
+add_executable(TF_to_matrix src/TF_to_matrix.cpp)
+target_link_libraries(TF_to_matrix
+  ${catkin_LIBRARIES}
+  ${roslib_LIBRARIES}
+  ${PCL_LIBRARIES}
+)

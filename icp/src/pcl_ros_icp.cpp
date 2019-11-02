@@ -64,23 +64,17 @@ void pc2_to_pcl_plus_icp(const boost::shared_ptr<const sensor_msgs::PointCloud2>
 }
 int main (int argc, char** argv)
 {
-	ros::init(argc, argv, "listener");
+	ros::init(argc, argv, "ICP_on_map");
     pcl::io::loadPCDFile<pcl::PointXYZ> ("/home/shreyanshdarshan/Localization/catkin_ws/src/premapped_localization/icp/src/map.pcd", *cloud_out);
 	ros::NodeHandle n;
-	ros::Subscriber sub = n.subscribe("/kitti/velo/pointcloud", 1000, pc2_to_pcl_plus_icp);
+	ros::Subscriber sub = n.subscribe("/velodyne_points", 1000, pc2_to_pcl_plus_icp);
     ros::Publisher chatter_pub = n.advertise<sensor_msgs::PointCloud2>("/transformed_cloud", 1000);
-    ros::Publisher map_pub = n.advertise<sensor_msgs::PointCloud2>("/map_cloud", 1000);
-    sensor_msgs::PointCloud2 map_msg;
-    map_msg.header.frame_id = "base_link";
-    pcl::toROSMsg(*cloud_out.get(), map_msg );
     while (ros::ok())
     {
         sensor_msgs::PointCloud2 object_msg;
-        object_msg.header.frame_id = "base_link";
-
         pcl::toROSMsg(*transformed_cloud.get(),object_msg );
+        object_msg.header.frame_id = "world";
         chatter_pub.publish(object_msg);
-        map_pub.publish(map_msg);
         //cout<<object_msg;
 	    ros::spinOnce();
     }
