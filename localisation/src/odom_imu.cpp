@@ -20,7 +20,7 @@ nav_msgs::Odometry odom;
 
 void odomCallback(const geometry_msgs::TwistStamped msg)
 {
-    std::cout<<"\n\n\n\n\n\n\n\n\n\n\n\n..........\n\n\n\n\n\n\n\n\n";
+    //std::cout<<"\n\n\n\n\n\n\n\n\n\n\n\n..........\n\n\n\n\n\n\n\n\n";
     vr=msg.twist.linear.y/**(5.0/18)*/;//fix for kmph to mps for mahindra car
     vl=msg.twist.linear.x/**(5.0/18)*/;
     v=(vl+vr)/2;
@@ -51,7 +51,7 @@ void imuCallback(sensor_msgs::Imu imu_msg)
 
 int main(int argc, char** argv)
 {
-    std::cout<<"\n\n\n\n\n\n\n\n\n\n\n\n..........\n\n\n\n\n\n\n\n\n";
+    //std::cout<<"\n\n\n\n\n\n\n\n\n\n\n\n..........\n\n\n\n\n\n\n\n\n";
     ros::init(argc, argv, "odom_imu");
     ros::NodeHandle n;
 

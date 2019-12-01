@@ -10,7 +10,7 @@ ros::Publisher odom_pub;
   
 void odomCallback(nav_msgs::Odometry msg)
 {
-  std::cout<<".........................\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n............................"<<ros::ok();
+  std::cout<<"\n.........................\n"<<ros::ok();
 	if (ros::ok())
 {
     //std::cout<<".........................\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n............................";
@@ -83,7 +83,7 @@ void odomCallback(nav_msgs::Odometry msg)
 
 
 int main(int argc, char** argv){
-  std::cout<<".........................\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n............................";
+  //std::cout<<".........................\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n............................";
   ros::init(argc, argv, "odom_corr");
   ros::NodeHandle n;
   //odometry - covariance + tf

@@ -17,7 +17,7 @@
 
 #include <bits/stdc++.h>
 
-tf::StampedTransform transform;
+using namespace std;
 
 // pcl::PointCloud<pcl::PointXYZ>::Ptr pcin (new pcl::PointCloud<pcl::PointXYZ>);
 // pcl::PointCloud<pcl::PointXYZ>::Ptr pcout (new pcl::PointCloud<pcl::PointXYZ>);
@@ -34,10 +34,13 @@ void placeholder(const boost::shared_ptr<const sensor_msgs::PointCloud2>& input)
 
 int main(int argc, char** argv)
 {
+  tf::StampedTransform transform1;
   ros::init(argc, argv, "tf_to_matrix");
 
   ros::NodeHandle node;
-
+  
+  ros::Rate rate(2.0);
+  
   tf::TransformListener listener;
 
   // ros::Rate rate(10.0);
@@ -47,27 +50,23 @@ int main(int argc, char** argv)
   
   while (node.ok()){
     
-    // try{
-    //   listener.lookupTransform("/map", "/base_link", ros::Time(0), transform);
-    // }
-    // catch (tf::TransformException ex){
-    //   ROS_ERROR("%s",ex.what());
-    //   ros::Duration(1.0).sleep();
-    // }
+    try
+    {
+      listener.lookupTransform("/map", "/base_link", ros::Time(0), transform1);
+      //cout<<transform.translation.x<<endl<<transform.translation.y<<endl<<endl;
+    }
+    catch (tf::TransformException ex)
+    {
+      ROS_ERROR("%s",ex.what());
+      ros::Duration(1.0).sleep();
+    }
 
     //sensor_msgs::PointCloud2 object_msg;    
-    listener.transformPointCloud ("base_link", pcin, pcout);
-    chatter_pub.publish(pcout);
-    //std::cout<<transform.getOrigin().x()<<"\t"<<transform.getOrigin().y()<<std::endl;
-    //turtlesim::Velocity vel_msg;
-    // vel_msg.angular = 4.0 * atan2(transform.getOrigin().y(),
-    //                             transform.getOrigin().x());
-    // vel_msg.linear = 0.5 * sqrt(pow(transform.getOrigin().x(), 2) +
-    //                             pow(transform.getOrigin().y(), 2));
-    //turtle_vel.publish(vel_msg);
+      //listener.transformPointCloud ("base_link", pcin, pcout);
+      //chatter_pub.publish(pcout);
     //chatter_pub.publish(object_msg);
-    //rate.sleep();
-    ros::spinOnce();
+    rate.sleep();
+    //ros::spinOnce();
   }
   return 0;
 };
