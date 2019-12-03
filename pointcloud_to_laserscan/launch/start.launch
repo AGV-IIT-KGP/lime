@@ -6,9 +6,9 @@
     <node pkg="pointcloud_to_laserscan" type="pointcloud_to_laserscan_node" name="pointcloud_to_laserscan" output="screen">
         <rosparam>
             target_frame: base_link # Leave disabled to output scan in pointcloud frame
-            transform_tolerance: 1
-            min_height: -3
-            max_height: 3
+            transform_tolerance: 0.5
+            min_height: -1
+            max_height: 1
 
             angle_min: -3.14159 # -M_PI/2
             angle_max: 3.14159 # M_PI/2
