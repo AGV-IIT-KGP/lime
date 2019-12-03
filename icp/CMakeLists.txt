@@ -209,3 +209,21 @@ target_link_libraries(pcl_2_laser
   ${roslib_LIBRARIES}
   ${PCL_LIBRARIES}
 )
+add_executable(pcl_ros_icp src/pcl_ros_icp.cpp)
+target_link_libraries(pcl_ros_icp
+  ${catkin_LIBRARIES}
+  ${roslib_LIBRARIES}
+  ${PCL_LIBRARIES}
+)
+add_executable(map_sender src/map_sender.cpp)
+target_link_libraries(map_sender
+  ${catkin_LIBRARIES}
+  ${roslib_LIBRARIES}
+  ${PCL_LIBRARIES}
+)
+add_executable(TF_to_matrix src/TF_to_matrix.cpp)
+target_link_libraries(TF_to_matrix
+  ${catkin_LIBRARIES}
+  ${roslib_LIBRARIES}
+  ${PCL_LIBRARIES}
+)

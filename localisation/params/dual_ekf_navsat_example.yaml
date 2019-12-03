@@ -17,7 +17,7 @@ ekf_se_odom:
   world_frame: odom
 
   odom0: /odom_c
-  odom0_config: [true, true, false,
+  odom0_config: [false, false, false,
                  false, false, false,
                  true,  true,  false,
                  false, false, true,
@@ -28,10 +28,10 @@ ekf_se_odom:
   odom0_relative: false
 
   imu0: /imu
-  imu0_config: [true, true, false,
+  imu0_config: [false,false, false,
                 false,  false,  false,
-                false, false, false,
-                false,  false,  true,
+                false, false, true,
+                false,  false,  false,
                 false,  false,  false]
   imu0_nodelay: false
   imu0_differential: false
@@ -115,7 +115,7 @@ ekf_se_map:
   imu0_config: [false, false, false,
                 false,  false,  false,
                 false, false, false,
-                false,  false,  false,
+                false,  false,  true,
                 false,  false,  false]
   imu0_nodelay: true
   imu0_differential: false
