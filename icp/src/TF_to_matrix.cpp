@@ -70,11 +70,9 @@ int main(int argc, char** argv)
     {
       std::cout<<1<<std::endl;
       //pcl_ros::transformPointCloud ("base_link", pcin, pcout, listener);
-      transformPointCloud ("base_link", ros::Time::now(), const pcl::PointCloud <PointT> &cloud_in,
-                        "odom",
-                        pcl::PointCloud <PointT> &cloud_out, 
-                        const tf::TransformListener &tf_listener)
+      pcl_ros::transformPointCloud ("base_link", pcin, pcout, listener);
     }
+    pcout.header.frame_id = "/odom";
     cloud_pub.publish(pcout);
 
     //sensor_msgs::PointCloud2 object_msg;    
