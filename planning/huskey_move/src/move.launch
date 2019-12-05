@@ -22,6 +22,6 @@
 
   <arg name="rvizconfig" default="$(find tf_eklavya)/igvc.rviz" />
   <node name="rviz" pkg="rviz" type="rviz" args="-d $(arg rvizconfig)" required="true" />
-  <node pkg="outdoor_waypoint_nav" type="switchgps" respawn="false" name="GPS_Switcher" output="screen" />
+  <!-- <node pkg="outdoor_waypoint_nav" type="switchgps" respawn="false" name="GPS_Switcher" output="screen" /> -->
 
  </launch>

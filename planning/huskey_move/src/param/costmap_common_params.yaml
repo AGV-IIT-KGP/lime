@@ -13,13 +13,13 @@ obstacle_layer:
   enabled: true
   obstacle_range: 500
   raytrace_range: 500
-  inflation_radius: 0.35
+  inflation_radius: 1
   track_unknown_space: true
   combination_method: 1
 
-  observation_sources: point_cloud 
-  point_cloud: {sensor_frame: laser, data_type: LaserScan, clearing: true, marking: true, topic: scan, inf_is_valid: true}
-  # lanes_: {sensor_frame: laser, data_type: LaserScan, clearing: true, marking: true, topic: lanes, inf_is_valid: true}
+  observation_sources: point_cloud
+  point_cloud: {sensor_frame: base_link, data_type: LaserScan, clearing: true, marking: true, topic: scan, inf_is_valid: true}
+  #lanes_: {sensor_frame: laser, data_type: LaserScan, clearing: true, marking: true, topic: lanes, inf_is_valid: true}
 
 inflation_layer:
   enabled:              true
@@ -27,7 +27,7 @@ inflation_layer:
   inflation_radius:     0.5   # max. distance from an obstacle at which costs are incurred for planning paths.
 
 static_layer:
-  enabled:              true
+  enabled:              false
   map_topic:            "odom"
   # observation_sources: pot 
   # pot: {sensor_frame: laser, data_type: LaserScan, clearing: true, marking: true, topic: pot_hole_topic, inf_is_valid: true}
