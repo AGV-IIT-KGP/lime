@@ -21,14 +21,11 @@ ofstream file_1("transforms.txt");
 int i=0;
 pcl::PointCloud<pcl::PointXYZ>::Ptr transformed_cloud(new pcl::PointCloud<pcl::PointXYZ>);
 pcl::PointCloud<pcl::PointXYZ>::Ptr cloud_out (new pcl::PointCloud<pcl::PointXYZ>);
-
-void pc2_to_pcl_plus_icp(const boost::shared_ptr<const sensor_msgs::PointCloud2>& input)
+pcl::PCLPointCloud2 pcl_pc2;
+void do_pcl()
 {
-
-    pcl::PCLPointCloud2 pcl_pc2;
-    pcl_conversions::toPCL(*input,pcl_pc2);
     pcl::PointCloud<pcl::PointXYZ>::Ptr current_lidar(new pcl::PointCloud<pcl::PointXYZ>);
-    pcl::fromPCLPointCloud2(pcl_pc2,*current_lidar);
+    pcl::fromPCLPointCloud2(pcl_pc2, *current_lidar);
     
   	pcl::IterativeClosestPoint<pcl::PointXYZ, pcl::PointXYZ> icp;
   	icp.setInputSource(current_lidar);
@@ -59,6 +56,45 @@ void pc2_to_pcl_plus_icp(const boost::shared_ptr<const sensor_msgs::PointCloud2>
     // pcl::PointCloud<pcl::PointXYZ>::Ptr transformed_cloud (new pcl::PointCloud<pcl::PointXYZ> ());
     // // You can either apply transform_1 or transform_2; they are the same
     pcl::transformPointCloud (*current_lidar, *transformed_cloud, transform_1);
+}
+
+void pc2_to_pcl_plus_icp(const boost::shared_ptr<const sensor_msgs::PointCloud2>& input)
+{
+        pcl_conversions::toPCL(*input,pcl_pc2);
+//     pcl::PCLPointCloud2 pcl_pc2;
+//     pcl_conversions::toPCL(*input,pcl_pc2);
+//     pcl::PointCloud<pcl::PointXYZ>::Ptr current_lidar(new pcl::PointCloud<pcl::PointXYZ>);
+//     pcl::fromPCLPointCloud2(pcl_pc2,*current_lidar);
+    
+//   	pcl::IterativeClosestPoint<pcl::PointXYZ, pcl::PointXYZ> icp;
+//   	icp.setInputSource(current_lidar);
+//     icp.setInputTarget(cloud_out);
+//     pcl::PointCloud<pcl::PointXYZ> Final;
+//     icp.align(Final);
+//     //std::cout << "has converged:" << icp.hasConverged() << " score: " <<
+//     //icp.getFitnessScore() << std::endl;
+//     std::cout<<i++;
+//     // file_1<<i<<")"<< icp.getFinalTransformation() <<"\n\n";
+
+
+
+//    // Eigen::Affine3f transform_2 = Eigen::Affine3f::Identity();
+//     // Eigen::Affine3f transform_2=icp.getFinalTransformation();
+//     Eigen::Matrix4f transform_1 = icp.getFinalTransformation();
+//     // Define a translation of 2.5 meters on the x axis.
+//     //transform_2.translation() << 2.5, 0.0, 0.0;
+
+//     // The same rotation matrix as before; theta radians around Z axis
+//     //transform_2.rotate (Eigen::AngleAxisf (0.1, Eigen::Vector3f::UnitZ()));
+
+//     // // Print the transformation
+//     // printf ("\nMethod #2: using an Affine3f\n");
+//     // cout << transform_1.matrix() << std::endl;
+
+//     // // Executing the transformation
+//     // pcl::PointCloud<pcl::PointXYZ>::Ptr transformed_cloud (new pcl::PointCloud<pcl::PointXYZ> ());
+//     // // You can either apply transform_1 or transform_2; they are the same
+//     pcl::transformPointCloud (*current_lidar, *transformed_cloud, transform_1);
 
     
 }
@@ -72,8 +108,9 @@ int main (int argc, char** argv)
     while (ros::ok())
     {
         sensor_msgs::PointCloud2 object_msg;
+        do_pcl();
         pcl::toROSMsg(*transformed_cloud.get(),object_msg );
-        object_msg.header.frame_id = "world";
+        object_msg.header.frame_id = "odom";
         chatter_pub.publish(object_msg);
         //cout<<object_msg;
 	    ros::spinOnce();
