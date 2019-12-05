@@ -78,7 +78,7 @@ namespace RobotLocalization
   {
     ros::Time::init();
 
-    double frequency = 10.0;
+    double frequency = 1.0;
     double delay = 0.0;
     double transform_timeout = 0.0;
 
