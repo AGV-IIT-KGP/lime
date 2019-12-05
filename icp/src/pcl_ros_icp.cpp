@@ -27,11 +27,11 @@ void pc2_to_pcl_plus_icp(const boost::shared_ptr<const sensor_msgs::PointCloud2>
 
     pcl::PCLPointCloud2 pcl_pc2;
     pcl_conversions::toPCL(*input,pcl_pc2);
-    pcl::PointCloud<pcl::PointXYZ>::Ptr cloud_in(new pcl::PointCloud<pcl::PointXYZ>);
-    pcl::fromPCLPointCloud2(pcl_pc2,*cloud_in);
+    pcl::PointCloud<pcl::PointXYZ>::Ptr current_lidar(new pcl::PointCloud<pcl::PointXYZ>);
+    pcl::fromPCLPointCloud2(pcl_pc2,*current_lidar);
     
   	pcl::IterativeClosestPoint<pcl::PointXYZ, pcl::PointXYZ> icp;
-  	icp.setInputSource(cloud_in);
+  	icp.setInputSource(current_lidar);
     icp.setInputTarget(cloud_out);
     pcl::PointCloud<pcl::PointXYZ> Final;
     icp.align(Final);
@@ -58,7 +58,7 @@ void pc2_to_pcl_plus_icp(const boost::shared_ptr<const sensor_msgs::PointCloud2>
     // // Executing the transformation
     // pcl::PointCloud<pcl::PointXYZ>::Ptr transformed_cloud (new pcl::PointCloud<pcl::PointXYZ> ());
     // // You can either apply transform_1 or transform_2; they are the same
-    pcl::transformPointCloud (*cloud_in, *transformed_cloud, transform_1);
+    pcl::transformPointCloud (*current_lidar, *transformed_cloud, transform_1);
 
     
 }
@@ -67,7 +67,7 @@ int main (int argc, char** argv)
 	ros::init(argc, argv, "ICP_on_map");
     pcl::io::loadPCDFile<pcl::PointXYZ> ("/home/shreyanshdarshan/Localization/catkin_ws/src/premapped_localization/icp/src/map.pcd", *cloud_out);
 	ros::NodeHandle n;
-	ros::Subscriber sub = n.subscribe("/velodyne_points", 1000, pc2_to_pcl_plus_icp);
+	ros::Subscriber sub = n.subscribe("/shifted_points", 1000, pc2_to_pcl_plus_icp);
     ros::Publisher chatter_pub = n.advertise<sensor_msgs::PointCloud2>("/transformed_cloud", 1000);
     while (ros::ok())
     {

@@ -227,3 +227,9 @@ target_link_libraries(TF_to_matrix
   ${roslib_LIBRARIES}
   ${PCL_LIBRARIES}
 )
+add_executable(shift_points src/shift_points.cpp)
+target_link_libraries(shift_points
+  ${catkin_LIBRARIES}
+  ${roslib_LIBRARIES}
+  ${PCL_LIBRARIES}
+)

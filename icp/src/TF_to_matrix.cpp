@@ -38,7 +38,7 @@ void get_cloud(const boost::shared_ptr<const sensor_msgs::PointCloud2>& input)
 int main(int argc, char** argv)
 {
   tf::StampedTransform transform1;
-  ros::init(argc, argv, "shift");
+  ros::init(argc, argv, "shift_for_Cost");
 
   ros::NodeHandle node;
   
