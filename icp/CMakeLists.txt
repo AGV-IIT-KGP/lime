@@ -209,8 +209,8 @@ target_link_libraries(pcl_2_laser
   ${roslib_LIBRARIES}
   ${PCL_LIBRARIES}
 )
-add_executable(pcl_ros_icp src/pcl_ros_icp.cpp)
-target_link_libraries(pcl_ros_icp
+add_executable(new_icp src/new_icp.cpp)
+target_link_libraries(new_icp
   ${catkin_LIBRARIES}
   ${roslib_LIBRARIES}
   ${PCL_LIBRARIES}

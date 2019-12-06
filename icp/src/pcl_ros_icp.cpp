@@ -12,6 +12,7 @@
 #include <pcl/conversions.h>
 #include <pcl_ros/transforms.h>
 using namespace std;
+using namespace pcl;
 ofstream file_1("transforms.txt");
 // if (pcl::io::loadPCDFile<pcl::PointXYZ> ("map.pcd", *cloud_out) == -1) //* load the file
 //   {
