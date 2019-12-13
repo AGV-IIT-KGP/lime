@@ -43,6 +43,7 @@ int main(int argc, char** argv)
     ros::Publisher cloud_pub = node.advertise<sensor_msgs::PointCloud2>("/shifted_points", 1000);
 
     float zAvg;
+    cout<<"Enter zavg"<<endl;
     cin>>zAvg;
 
     while (node.ok())
@@ -83,7 +84,6 @@ int main(int argc, char** argv)
       //std::cout<<Rm<<std::endl;
       pcl_ros::transformPointCloud (Rm, pcin, pcout);
       pcl_ros::transformPointCloud (Tm, pcout, pcout2);
-      pcin.header.frame_id = "odom";
       
       pcl::PCLPointCloud2 groundless;
       pcl_conversions::toPCL(pcout2,groundless);
@@ -101,13 +101,19 @@ int main(int argc, char** argv)
           inliers->indices.push_back(i);
         }
       }
-      extract.setInputCloud(p_obstacles);
-      extract.setIndices(inliers);
-      extract.setNegative(true);
-      extract.filter(*p_obstacles);
-      pcl::toROSMsg(*p_obstacles.get(), pcout2);
+      if ((*p_obstacles).size()>0)
+      {
+        extract.setInputCloud(p_obstacles);
+        extract.setIndices(inliers);
+        extract.setNegative(true);
+        extract.filter(*p_obstacles);
+        pcl::toROSMsg(*p_obstacles.get(), pcout2);
 
+      }
 
+      pcout2.header.frame_id = "odom";
+      
+      cout<<"check"<<endl;
       cloud_pub.publish(pcout2);
       rate.sleep();
       ros::spinOnce();
