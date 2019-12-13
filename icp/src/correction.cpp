@@ -1,5 +1,6 @@
 #include <iostream>
 #include "ros/ros.h"
+#include <tf/transform_broadcaster.h>
 #include "sensor_msgs/PointCloud2.h"
 #include <pcl/io/pcd_io.h>
 #include <pcl_conversions/pcl_conversions.h>
@@ -40,13 +41,31 @@ int main (int argc, char** argv)
     ros::init(argc, argv, "correction_of_transform");
     //pcl::io::loadPCDFile<pcl::PointXYZ> ("/home/shreyanshdarshan/Localization/catkin_ws/src/premapped_localization/icp/src/map.pcd", *cloud_out);
 	ros::NodeHandle n;
-	ros::Subscriber odometry_sub = n.subscribe("/odometry/filtered_odom", 1000, initialize_correct_odometry  );
-    ros::Subscriber tf_sub = n.subscribe("/corr_matrix", 1000,tf_to_nav_msgs );
+	//ros::Subscriber odometry_sub = n.subscribe("/odometry/filtered_odom", 1000, initialize_correct_odometry  );
+    //ros::Subscriber tf_sub = n.subscribe("/corr_matrix", 1000,tf_to_nav_msgs );
     ros::Publisher chatter_pub = n.advertise<nav_msgs/Odometry>("/odometry/filtered_new", 1000);
-
+    tf::TransformListener listener;
     while (ros::ok())
     {
         nav_msgs::Odometry object_msg;
+        tf::StampedTransform corr_transform;
+        try{
+                listener.lookupTransform("corr", "odom",  ros::Time(0), corr_transform);
+            }
+        catch (tf::TransformException ex)
+        {
+            ROS_ERROR("%s",ex.what());
+            ros::Duration(1.0).sleep();
+        }
+        tf::StampedTransform odometry_transform;
+        try{
+                listener.lookupTransform("/base_link", "/odom",  ros::Time(0), odometry_transform);
+            }
+        catch (tf::TransformException ex)
+        {
+            ROS_ERROR("%s",ex.what());
+            ros::Duration(1.0).sleep();
+        }
         corrected=uncorrected;
         //find_matrix();
         //pcl::toROSMsg(*transformed_cloud.get(),object_msg );
