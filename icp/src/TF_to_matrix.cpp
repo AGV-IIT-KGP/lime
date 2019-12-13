@@ -56,7 +56,7 @@ int main(int argc, char** argv)
     i++;
     try
     {
-      listener.lookupTransform("/odom", "/base_link", ros::Time(0), transform1);
+      listener.lookupTransform("/base_link", "/odom", ros::Time(0), transform1);
       //cout<<transform.translation.x<<endl<<transform.translation.y<<endl<<endl;
     }
     catch (tf::TransformException ex)
@@ -71,8 +71,9 @@ int main(int argc, char** argv)
     double r,p,y;
     m.getRPY(r,p,y);
     y = -y;
-    // r = -r;
-    // p = -p;
+     //r = -r;
+     //p = -p;
+    // cout<<r<<" "<<p<<" "<<y<<endl;
     Eigen::Matrix4f Tm, Rm;
     Rm <<     1,   0,   0,  0,
               0,   1,    0,  0,
@@ -82,6 +83,7 @@ int main(int argc, char** argv)
               0,   1,    0,  -transform1.getOrigin().y(),
               0,   0,   1,    -transform1.getOrigin().z(),
               0,            0,          0,       1; 
+    cout<<"wofwjgeq3"<<" "<<transform1.getOrigin().x()<<" "<<transform1.getOrigin().y()<<" "<<transform1.getOrigin().z()<<endl;
     Rm(0,0)=cos(y)*cos(p);
     Rm(0,1)=(cos(y)*sin(p)*sin(r))-(sin(y)*cos(r));
     Rm(0,2)=(cos(y)*sin(p)*cos(r))+(sin(y)*sin(r));
@@ -91,7 +93,7 @@ int main(int argc, char** argv)
     Rm(2,0)=-sin(p);
     Rm(2,1)=cos(p)*sin(r);
     Rm(2,2)=cos(p)*cos(r);
-        std::cout<<Rm<<std::endl;
+       // std::cout<<Rm<<std::endl;
 
     if (i>4)
     {
@@ -102,6 +104,7 @@ int main(int argc, char** argv)
       pcl_ros::transformPointCloud (Rm, pcout, pcout2);
     }
     pcout2.header.frame_id = "/base_link";
+    pcout2.header.stamp = ros::Time::now();
     cloud_pub.publish(pcout2);
 
     //sensor_msgs::PointCloud2 object_msg;    
