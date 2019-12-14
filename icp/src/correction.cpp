@@ -14,40 +14,40 @@
 #include <pcl_ros/transforms.h>
 using namespace std;
 using namespace pcl;
-tf::Transform transform2;
-nav_msgs::Odometry uncorrected; 
-void initialize_correct_odometry(const nav_msgs::Odometry input)
+//tf::Transform transform2;
+nav_msgs::Odometry corrected; 
+void initialize_odometry(const nav_msgs::Odometry input)
 {
-    uncorrected=input;
+    corrected=input;
 }
-void tf_to_nav_msgs(const tf:Transform input_tf)
-{
-    transform2=input_tf;
-    tf::Matrix3x3 m(transform2.getRotation());
-    double r,p,y;
-    m.getRPY(r,p,y);
-    nav_msgs::Odometry corrected;
-    corrected.pose.pose.position.x=transform2.getOrigin().x();
-    corrected.pose.pose.position.y=transform2.getOrigin().y();
-    corrected.pose.pose.position.z=transform2.getOrigin().z();
-    corrected.pose.pose.orientation.x=
-    corrected.pose.pose.orientation.y=
-    corrected.pose.pose.orientation.z=
-    corrected.pose.pose.orientation.w=
+// void tf_to_nav_msgs(const tf:Transform input_tf)
+// {
+//     transform2=input_tf;
+//     tf::Matrix3x3 m(transform2.getRotation());
+//     double r,p,y;
+//     m.getRPY(r,p,y);
+//     nav_msgs::Odometry corrected;
+//     corrected.pose.pose.position.x=transform2.getOrigin().x();
+//     corrected.pose.pose.position.y=transform2.getOrigin().y();
+//     corrected.pose.pose.position.z=transform2.getOrigin().z();
+//     corrected.pose.pose.orientation.x=transform1.getRotation().x();
+//     corrected.pose.pose.orientation.y=
+//     corrected.pose.pose.orientation.z=
+//     corrected.pose.pose.orientation.w=
 
-}
+// }
 int main (int argc, char** argv)
 {
     ros::init(argc, argv, "correction_of_transform");
     //pcl::io::loadPCDFile<pcl::PointXYZ> ("/home/shreyanshdarshan/Localization/catkin_ws/src/premapped_localization/icp/src/map.pcd", *cloud_out);
 	ros::NodeHandle n;
-	//ros::Subscriber odometry_sub = n.subscribe("/odometry/filtered_odom", 1000, initialize_correct_odometry  );
+	ros::Subscriber odometry_sub = n.subscribe("/odometry/filtered_odom", 1000, initialize_correct_odometry);
     //ros::Subscriber tf_sub = n.subscribe("/corr_matrix", 1000,tf_to_nav_msgs );
     ros::Publisher chatter_pub = n.advertise<nav_msgs/Odometry>("/odometry/filtered_new", 1000);
     tf::TransformListener listener;
     while (ros::ok())
     {
-        nav_msgs::Odometry object_msg;
+        //nav_msgs::Odometry object_msg;
         tf::StampedTransform corr_transform;
         try{
                 listener.lookupTransform("corr", "odom",  ros::Time(0), corr_transform);
@@ -66,11 +66,19 @@ int main (int argc, char** argv)
             ROS_ERROR("%s",ex.what());
             ros::Duration(1.0).sleep();
         }
-        corrected=uncorrected;
+        odometry_transform=corr_transform*odometry_transform;
+        corrected.pose.pose.position.x=odometry_transform.getOrigin().x();
+        corrected.pose.pose.position.y=odometry_transform.getOrigin().y();
+        corrected.pose.pose.position.z=odometry_transform.getOrigin().z();
+        corrected.pose.pose.orientation.x=transform1.getRotation().x();
+        corrected.pose.pose.orientation.y=transform1.getRotation().y();
+        corrected.pose.pose.orientation.z=transform1.getRotation().z();
+        corrected.pose.pose.orientation.w=transform1.getRotation().w();
+
         //find_matrix();
         //pcl::toROSMsg(*transformed_cloud.get(),object_msg );
-        object_msg.header.frame_id = "odom";
-        chatter_pub.publish(object_msg);
+        corrected.header.frame_id = "odom";
+        chatter_pub.publish(corrected);
         //cout<<object_msg;
 	    ros::spinOnce();
     }

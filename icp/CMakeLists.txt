@@ -239,3 +239,9 @@ target_link_libraries(shift_points
   ${roslib_LIBRARIES}
   ${PCL_LIBRARIES}
 )
+add_executable(correction src/correction.cpp)
+target_link_libraries(correction
+  ${catkin_LIBRARIES}
+  ${roslib_LIBRARIES}
+  ${PCL_LIBRARIES}
+)
