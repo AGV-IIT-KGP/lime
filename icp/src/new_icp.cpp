@@ -120,7 +120,7 @@ void pc2_to_pcl_plus_icp(const boost::shared_ptr<const sensor_msgs::PointCloud2>
 }
 int main (int argc, char** argv)
 {
-	ros::init(argc, argv, "ICP_on_map");
+	ros::init(argc, argv, "RANSAC_on_map");
   pcl::io::loadPCDFile<PointNT> ("/home/shreyanshdarshan/Localization/catkin_ws/src/premapped_localization/icp/src/map.pcd", *cloud_out);
 
   pcl::VoxelGrid<PointNT> grid;

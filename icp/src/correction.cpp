@@ -11,12 +11,14 @@
 #include <pcl/common/transforms.h>
 #include <pcl/PCLPointCloud2.h>
 #include <pcl/conversions.h>
+#include <nav_msgs/Odometry.h>
 #include <pcl_ros/transforms.h>
+
 using namespace std;
 using namespace pcl;
 //tf::Transform transform2;
 nav_msgs::Odometry corrected; 
-void initialize_odometry(const nav_msgs::Odometry input)
+void initialize_correct_odometry(const nav_msgs::Odometry input)
 {
     corrected=input;
 }
@@ -43,37 +45,45 @@ int main (int argc, char** argv)
 	ros::NodeHandle n;
 	ros::Subscriber odometry_sub = n.subscribe("/odometry/filtered_odom", 1000, initialize_correct_odometry);
     //ros::Subscriber tf_sub = n.subscribe("/corr_matrix", 1000,tf_to_nav_msgs );
-    ros::Publisher chatter_pub = n.advertise<nav_msgs/Odometry>("/odometry/filtered_new", 1000);
+    ros::Publisher chatter_pub = n.advertise<nav_msgs::Odometry>("/odometry/filtered_new", 1000);
     tf::TransformListener listener;
+    static tf::TransformBroadcaster br;
     while (ros::ok())
     {
         //nav_msgs::Odometry object_msg;
-        tf::StampedTransform corr_transform;
+        tf::StampedTransform cumm_transform;
         try{
-                listener.lookupTransform("corr", "odom",  ros::Time(0), corr_transform);
+                listener.lookupTransform("cumm", "/base_link",  ros::Time(0), cumm_transform);
             }
         catch (tf::TransformException ex)
         {
             ROS_ERROR("%s",ex.what());
             ros::Duration(1.0).sleep();
         }
-        tf::StampedTransform odometry_transform;
+        cout<<"aaaaaaaaaaaa"<<endl;
+        tf::StampedTransform odometry_stamped_transform;
         try{
-                listener.lookupTransform("/base_link", "/odom",  ros::Time(0), odometry_transform);
+                listener.lookupTransform("/base_link", "/odom",  ros::Time(0), odometry_stamped_transform);
             }
         catch (tf::TransformException ex)
         {
             ROS_ERROR("%s",ex.what());
             ros::Duration(1.0).sleep();
         }
-        odometry_transform=corr_transform*odometry_transform;
-        corrected.pose.pose.position.x=odometry_transform.getOrigin().x();
-        corrected.pose.pose.position.y=odometry_transform.getOrigin().y();
-        corrected.pose.pose.position.z=odometry_transform.getOrigin().z();
-        corrected.pose.pose.orientation.x=transform1.getRotation().x();
-        corrected.pose.pose.orientation.y=transform1.getRotation().y();
-        corrected.pose.pose.orientation.z=transform1.getRotation().z();
-        corrected.pose.pose.orientation.w=transform1.getRotation().w();
+
+        // ros::Time odom_transform_time = odometry_stamped_transform.stamp_;
+
+         //odometry_stamped_transform = tf::StampedTransform(corr_transform*odometry_stamped_transform, odometry_stamped_transform.stamp_, "odom", "corr");	
+        tf::Transform corr_transform=corr_transform*odometry_stamped_transform;
+
+        br.sendTransform(tf::StampedTransform(corr_transform, ros::Time::now(), "odom", "cumm"));
+        corrected.pose.pose.position.x=odometry_stamped_transform.getOrigin().x();
+        corrected.pose.pose.position.y=odometry_stamped_transform.getOrigin().y();
+        corrected.pose.pose.position.z=odometry_stamped_transform.getOrigin().z();
+        corrected.pose.pose.orientation.x=odometry_stamped_transform.getRotation().x();
+        corrected.pose.pose.orientation.y=odometry_stamped_transform.getRotation().y();
+        corrected.pose.pose.orientation.z=odometry_stamped_transform.getRotation().z();
+        corrected.pose.pose.orientation.w=odometry_stamped_transform.getRotation().w();
 
         //find_matrix();
         //pcl::toROSMsg(*transformed_cloud.get(),object_msg );

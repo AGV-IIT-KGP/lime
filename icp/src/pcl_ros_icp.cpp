@@ -15,7 +15,7 @@
 #include <pcl_ros/transforms.h>
 using namespace std;
 using namespace pcl;
-ofstream file_1("transforms.txt");
+// ofstream file_1("transforms.txt");
 // if (pcl::io::loadPCDFile<pcl::PointXYZ> ("map.pcd", *cloud_out) == -1) //* load the file
 //   {
 //     PCL_ERROR ("Couldn't read the map file i.e map.pcd \n");
@@ -26,9 +26,11 @@ Eigen::Matrix4f cumm_transform;
 pcl::PointCloud<pcl::PointXYZ>::Ptr transformed_cloud(new pcl::PointCloud<pcl::PointXYZ>);
 pcl::PointCloud<pcl::PointXYZ>::Ptr cloud_out (new pcl::PointCloud<pcl::PointXYZ>);
 pcl::PCLPointCloud2 pcl_pc2;
-static tf::TransformBroadcaster br;
+
+
 void do_pcl()
 {
+    static tf::TransformBroadcaster br;
     pcl::PointCloud<pcl::PointXYZ>::Ptr current_lidar(new pcl::PointCloud<pcl::PointXYZ>);
     pcl::fromPCLPointCloud2(pcl_pc2, *current_lidar);
     
@@ -83,19 +85,20 @@ void do_pcl()
         // pcl::PointCloud<pcl::PointXYZ>::Ptr transformed_cloud (new pcl::PointCloud<pcl::PointXYZ> ());
         // // You can either apply transform_1 or transform_2; they are the same
 
-        br.sendTransform(tf::StampedTransform(transform, ros::Time::now(), "odom", "corr"));
+        br.sendTransform(tf::StampedTransform(transform, ros::Time::now(), "/base_link", "cumm"));
     pcl::transformPointCloud (*current_lidar, *transformed_cloud, transform_1);
 }
 
 void pc2_to_pcl_plus_icp(const boost::shared_ptr<const sensor_msgs::PointCloud2>& input)
 {
-        pcl_conversions::toPCL(*input,pcl_pc2);    
+    pcl_conversions::toPCL(*input,pcl_pc2);
 }
 int main (int argc, char** argv)
 {
 	ros::init(argc, argv, "ICP_on_map");
-    pcl::io::loadPCDFile<pcl::PointXYZ> ("/home/shreyanshdarshan/Localization/catkin_ws/src/premapped_localization/icp/src/map.pcd", *cloud_out);
 	ros::NodeHandle n;
+    cout<<endl<<"adada"<<endl;
+    pcl::io::loadPCDFile<pcl::PointXYZ> ("/home/shreyanshdarshan/Localization/catkin_ws/src/premapped_localization/icp/src/map.pcd", *cloud_out);
 	ros::Subscriber sub = n.subscribe("/shifted_points", 1000, pc2_to_pcl_plus_icp);
     ros::Publisher cloud_pub = n.advertise<sensor_msgs::PointCloud2>("/transformed_cloud", 1000);
     //ros::Publisher tf_pub = n.advertise<tf::Transform>("/corr_matrix", 1000);
@@ -122,7 +125,8 @@ int main (int argc, char** argv)
     tf::Transform transform;
     transform.setOrigin(origin);
     transform.setRotation(tfqt);
-    br.sendTransform(tf::StampedTransform(transform, ros::Time::now(), "odom", "corr"));
+    static tf::TransformBroadcaster br;
+    br.sendTransform(tf::StampedTransform(transform, ros::Time::now(), "/base_link", "cumm"));   
     while (ros::ok())
     {
         sensor_msgs::PointCloud2 object_msg;
