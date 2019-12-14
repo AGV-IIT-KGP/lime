@@ -82,5 +82,5 @@ int main (int argc, char** argv)
         //cout<<object_msg;
 	    ros::spinOnce();
     }
-    retunr(0);
+    return(0);
 }
