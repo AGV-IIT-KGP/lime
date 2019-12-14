@@ -10,7 +10,7 @@
 #include <pcl/console/parse.h>
 #include <pcl/common/transforms.h>
 #include <pcl/PCLPointCloud2.h>
-#include <pcl/conversioint main (int argc, char** argv)ns.h>
+#include <pcl/conversions.h>
 #include <pcl_ros/transforms.h>
 using namespace std;
 using namespace pcl;
