@@ -57,7 +57,7 @@ void do_pcl()
     cumm_transform=transform_1*cumm_transform;
 
     tf::Vector3 origin;
-    origin.setValue(static_cast<double>(cumm_transform(0,3)),static_cast<double>(cumm_transform(1,3)),static_cast<double>(cumm_transform(2,3)));
+    origin.setValue(static_cast<double>(cumm_transform(0,3)),static_cast<double>(cumm_transform(1,3)), 0);//static_cast<double>(cumm_transform(2,3)));
 
     cout << origin << endl;
     tf::Matrix3x3 tf3d;
@@ -111,7 +111,7 @@ int main (int argc, char** argv)
    // cumm_transform=transform_1*cumm_transform;
 
     tf::Vector3 origin;
-    origin.setValue(static_cast<double>(cumm_transform(0,3)),static_cast<double>(cumm_transform(1,3)),static_cast<double>(cumm_transform(2,3)));
+    origin.setValue(static_cast<double>(cumm_transform(0,3)),static_cast<double>(cumm_transform(1,3)), static_cast<double>(cumm_transform(2,3)));
 
     cout << origin << endl;
     tf::Matrix3x3 tf3d;

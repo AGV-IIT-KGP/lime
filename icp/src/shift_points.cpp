@@ -43,7 +43,7 @@ int main(int argc, char** argv)
     ros::Subscriber sub = node.subscribe("/velodyne_points", 1000, get_cloud);
     ros::Publisher cloud_pub = node.advertise<sensor_msgs::PointCloud2>("/shifted_points", 1000);
 
-    float zAvg = -1.5;
+    float zAvg = -1.4;
     // cout<<"Enter zavg"<<endl;
     // cin>>zAvg;
 
@@ -63,7 +63,8 @@ int main(int argc, char** argv)
       tf::Matrix3x3 m(transform1.getRotation());
       double r,p,y;
       m.getRPY(r,p,y);
-
+      r=0;
+      p=0;
       Eigen::Matrix4f Tm, Rm;
       Rm <<     1,   0,   0,  0,
               0,   1,    0,  0,
@@ -71,7 +72,7 @@ int main(int argc, char** argv)
               0,            0,          0,       1; 
       Tm <<     1,   0,   0,  transform1.getOrigin().x(),
               0,   1,    0,  transform1.getOrigin().y(),
-              0,   0,   1,    transform1.getOrigin().z(),
+              0,   0,   1,    0, //transform1.getOrigin().z(),
               0,            0,          0,       1; 
       Rm(0,0)=cos(y)*cos(p);
       Rm(0,1)=(cos(y)*sin(p)*sin(r))-(sin(y)*cos(r));
@@ -100,7 +101,8 @@ int main(int argc, char** argv)
       m = tf::Matrix3x3 (transform2.getRotation());
       //double r,p,y;
       m.getRPY(r,p,y);
-
+      r = 0;
+      p = 0;
       // Eigen::Matrix4f Tm, Rm;
       Rm <<     1,   0,   0,  0,
               0,   1,    0,  0,
@@ -108,7 +110,7 @@ int main(int argc, char** argv)
               0,            0,          0,       1; 
       Tm <<     1,   0,   0,  transform2.getOrigin().x(),
               0,   1,    0,  transform2.getOrigin().y(),
-              0,   0,   1,    transform2.getOrigin().z(),
+              0,   0,   1,    0, //transform2.getOrigin().z(),
               0,            0,          0,       1; 
       Rm(0,0)=cos(y)*cos(p);
       Rm(0,1)=(cos(y)*sin(p)*sin(r))-(sin(y)*cos(r));
