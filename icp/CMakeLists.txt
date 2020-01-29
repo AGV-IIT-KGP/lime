@@ -14,8 +14,14 @@ find_package(catkin REQUIRED COMPONENTS
   sensor_msgs
 )
 
+find_package(OpenCV 3)
+
 ## System dependencies are found with CMake's conventions
 # find_package(Boost REQUIRED COMPONENTS system)
+
+
+# FOR C++11 SUPPORT
+set(CMAKE_CXX_FLAGS "-std=c++0x ${CMAKE_CXX_FLAGS}")
 
 
 ## Uncomment this if the package has a setup.py. This macro ensures
@@ -120,6 +126,7 @@ include_directories(
 # include
   ${catkin_INCLUDE_DIRS}
   ${PCL_LIBRARIES}
+  ${OpenCV_INCLUDE_DIRS}
 )
 
 ## Declare a C++ library
@@ -239,9 +246,30 @@ target_link_libraries(shift_points
   ${roslib_LIBRARIES}
   ${PCL_LIBRARIES}
 )
-add_executable(correction src/correction.cpp)
-target_link_libraries(correction
+#add_executable(correction src/correction.cpp)
+#target_link_libraries(correction
+#  ${catkin_LIBRARIES}
+#  ${roslib_LIBRARIES}
+#  ${PCL_LIBRARIES}
+#)
+add_executable(imgmatch src/imgmatch.cpp)
+target_link_libraries(imgmatch
   ${catkin_LIBRARIES}
   ${roslib_LIBRARIES}
   ${PCL_LIBRARIES}
+  ${OpenCV_LIBRARIES}
+)
+add_executable(groundrem src/groundrem.cpp)
+target_link_libraries(groundrem
+  ${catkin_LIBRARIES}
+  ${roslib_LIBRARIES}
+  ${PCL_LIBRARIES}
+  ${OpenCV_LIBRARIES}
+)
+add_executable(grid_sender src/grid_sender.cpp)
+target_link_libraries(grid_sender
+  ${catkin_LIBRARIES}
+  ${roslib_LIBRARIES}
+  ${PCL_LIBRARIES}
+  ${OpenCV_LIBRARIES}
 )

@@ -92,6 +92,7 @@ void do_pcl()
 void pc2_to_pcl_plus_icp(const boost::shared_ptr<const sensor_msgs::PointCloud2>& input)
 {
     pcl_conversions::toPCL(*input,pcl_pc2);
+    // cout<<(*input).data[0]<<"wahwah"<<endl;
 }
 int main (int argc, char** argv)
 {
