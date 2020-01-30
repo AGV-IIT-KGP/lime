@@ -23,7 +23,7 @@ int main (int argc, char** argv)
 {
 	ros::init(argc, argv, "map_publisher");
     // ros::package::getPath('PKG_NAME')
-    pcl::io::loadPCDFile<pcl::PointXYZ> ("/home/shreyanshdarshan/Localization/catkin_ws/src/premapped_localization/icp/src/map.pcd", *map_cld);
+    pcl::io::loadPCDFile<pcl::PointXYZ> ("/home/shreyanshdarshan/Localization/catkin_ws/src/premapped_localization/icp/src/high res map/kitti final map.pcd", *map_cld);
 	ros::NodeHandle n;
     ros::Publisher map_pub = n.advertise<sensor_msgs::PointCloud2>("/map_cloud", 1000);
     sensor_msgs::PointCloud2 map_msg;
