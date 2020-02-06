@@ -273,3 +273,10 @@ target_link_libraries(grid_sender
   ${PCL_LIBRARIES}
   ${OpenCV_LIBRARIES}
 )
+add_executable(edge src/edge.cpp)
+target_link_libraries(edge
+  ${catkin_LIBRARIES}
+  ${roslib_LIBRARIES}
+  ${PCL_LIBRARIES}
+  ${OpenCV_LIBRARIES}
+)
