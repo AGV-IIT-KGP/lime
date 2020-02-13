@@ -29,7 +29,7 @@ int main (int argc, char** argv)
     sensor_msgs::PointCloud2 map_msg;
     pcl::toROSMsg(*map_cld.get(), map_msg );
     map_msg.header.frame_id = "odom";
-    while (ros::ok())
+    //while (ros::ok())
     {
         map_pub.publish(map_msg);
         //cout<<object_msg;

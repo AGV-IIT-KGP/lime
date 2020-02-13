@@ -280,3 +280,10 @@ target_link_libraries(edge
   ${PCL_LIBRARIES}
   ${OpenCV_LIBRARIES}
 )
+add_executable(encoder src/encoder.cpp)
+target_link_libraries(encoder
+  ${catkin_LIBRARIES}
+  ${roslib_LIBRARIES}
+  ${PCL_LIBRARIES}
+  ${OpenCV_LIBRARIES}
+)

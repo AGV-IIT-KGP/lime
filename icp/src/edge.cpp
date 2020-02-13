@@ -11,6 +11,9 @@
 #include <pcl/PCLPointCloud2.h>
 #include <pcl/conversions.h>
 #include <pcl_ros/transforms.h>
+#include <pcl/filters/voxel_grid.h>
+
+#define leaf 0.4
 
 using namespace std;
 
@@ -22,33 +25,34 @@ float dist (pcl::PointXYZ a, pcl::PointXYZ b)
 }
 
 int i=0;
-pcl::PointCloud<pcl::PointXYZ>::Ptr map_cld(new pcl::PointCloud<pcl::PointXYZ>);
+pcl::PointCloud<pcl::PointXYZ>::Ptr unfiltered(new pcl::PointCloud<pcl::PointXYZ>);
+pcl::PointCloud<pcl::PointXYZ>::Ptr in_cld(new pcl::PointCloud<pcl::PointXYZ>);
+pcl::PCLPointCloud2 pcl_pc2;
 pcl::PointCloud<pcl::PointXYZ>::Ptr edge_cld(new pcl::PointCloud<pcl::PointXYZ>);
 
-int main (int argc, char** argv)
+void pc2_to_pcl(const boost::shared_ptr<const sensor_msgs::PointCloud2>& input)
 {
-	ros::init(argc, argv, "map_publisher");
-    // ros::package::getPath('PKG_NAME')
-    pcl::io::loadPCDFile<pcl::PointXYZ> ("/media/shreyanshdarshan/New Volume/vision/PCL/PCD_VIEW/build/civil.pcd", *map_cld);
-	ros::NodeHandle n;
-    ros::Publisher map_pub = n.advertise<sensor_msgs::PointCloud2>("/map_cloud", 1000);
-    sensor_msgs::PointCloud2 map_msg;
+  pcl_conversions::toPCL(*input, pcl_pc2);
+}
+
+void edge_extract(int K, int thresholdDistance)
+{
+    (*edge_cld).clear();    
+    pcl::fromPCLPointCloud2(pcl_pc2, *unfiltered);
+    
+    pcl::console::print_highlight ("Downsampling...\n");
+    pcl::VoxelGrid<pcl::PointXYZ> grid;
+    grid.setLeafSize (leaf, leaf, leaf);
+    grid.setInputCloud (unfiltered);
+    grid.filter (*unfiltered);
     
     pcl::KdTreeFLANN<pcl::PointXYZ> kdtree;
-    kdtree.setInputCloud (map_cld);
+    kdtree.setInputCloud (unfiltered);
     pcl::PointXYZ searchPoint;
 
     cout<<endl<<"started"<<endl;
 
-    cout<< "Enter threshold distance" << endl;
-    float thresholdDistance = 1;
-    cin >> thresholdDistance;
-
     // K nearest neighbor search
-    int K = 20;
-    cout<<"Enter K: "<<endl;
-    cin >> K;
-
     std::vector<int> pointIdxNKNSearch(K);
     std::vector<float> pointNKNSquaredDistance(K);
 
@@ -57,11 +61,13 @@ int main (int argc, char** argv)
             << " " << searchPoint.z
             << ") with K=" << K << std::endl;
 
-    int sz = (*map_cld).size();
+    int sz = (*unfiltered).size();
 
-    for (int iter=0; iter<(*map_cld).size(); iter++)
+    int edge_pts=0, non_edge_pts = 0;
+
+    for (int iter=0; iter<(*unfiltered).size(); iter++)
     {
-        searchPoint = map_cld->points[iter];
+        searchPoint = unfiltered->points[iter];
         if ( kdtree.nearestKSearch (searchPoint, K, pointIdxNKNSearch, pointNKNSquaredDistance) > 0 )
         {
             pcl::PointXYZ Centroid;
@@ -70,22 +76,22 @@ int main (int argc, char** argv)
             float ResDist = 10000;
             for (std::size_t i = 0; i < pointIdxNKNSearch.size (); ++i)
             {
-                if (dist(searchPoint, map_cld->points[ pointIdxNKNSearch[i] ]) > 0.001)
+                if (dist(searchPoint, unfiltered->points[ pointIdxNKNSearch[i] ]) > 0.001)
                 {
-                    Centroid.x += map_cld->points[ pointIdxNKNSearch[i] ].x;
-                    Centroid.y += map_cld->points[ pointIdxNKNSearch[i] ].y;
-                    Centroid.z += map_cld->points[ pointIdxNKNSearch[i] ].z;
+                    Centroid.x += unfiltered->points[ pointIdxNKNSearch[i] ].x;
+                    Centroid.y += unfiltered->points[ pointIdxNKNSearch[i] ].y;
+                    Centroid.z += unfiltered->points[ pointIdxNKNSearch[i] ].z;
                     num++;
-                    float resCheck = dist (searchPoint, map_cld->points[ pointIdxNKNSearch[i] ]);
+                    float resCheck = dist (searchPoint, unfiltered->points[ pointIdxNKNSearch[i] ]);
                     if (resCheck < ResDist)
                     {
                         ResDist = resCheck;
-                        // cout<<dist(searchPoint, map_cld->points[ pointIdxNKNSearch[i] ])<<endl;
+                        // cout<<dist(searchPoint, unfiltered->points[ pointIdxNKNSearch[i] ])<<endl;
                     }
                 }
-                // std::cout << "    "  <<   map_cld->points[ pointIdxNKNSearch[i] ].x 
-                //         << " " << map_cld->points[ pointIdxNKNSearch[i] ].y 
-                //         << " " << map_cld->points[ pointIdxNKNSearch[i] ].z 
+                // std::cout << "    "  <<   unfiltered->points[ pointIdxNKNSearch[i] ].x 
+                //         << " " << unfiltered->points[ pointIdxNKNSearch[i] ].y 
+                //         << " " << unfiltered->points[ pointIdxNKNSearch[i] ].z 
                 //         << " (squared distance: " << pointNKNSquaredDistance[i] << ")" << std::endl;
             }
             // cout<<                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                   endl;
@@ -99,20 +105,46 @@ int main (int argc, char** argv)
             if (dist (Centroid, searchPoint) > thresholdDistance*ResDist)
             {
                 (*edge_cld).push_back(searchPoint);
+                edge_pts ++;
             }
+            else
+            {
+                non_edge_pts++;
+            }
+            
             // cout << iter <<" "<< sz << endl;
         }
     }
-    cout << endl << "ended" << endl;
+    cout << endl << "ended\nedge pts = " << edge_pts << "\nnon edge pts = " << non_edge_pts<<endl;
+}
 
-    pcl::toROSMsg(*edge_cld.get(), map_msg );
-    map_msg.header.frame_id = "odom";
+int main (int argc, char** argv)
+{
+	ros::init(argc, argv, "edge_pub");
+    // ros::package::getPath('PKG_NAME')
+    //pcl::io::loadPCDFile<pcl::PointXYZ> ("/media/shreyanshdarshan/New Volume/vision/PCL/XYZ2PCD/build/civil_rotated.pcd", *unfiltered);
+	
+    ros::NodeHandle n;
+    ros::Subscriber sub = n.subscribe("/velodyne_points", 1000, pc2_to_pcl);
+    ros::Publisher map_pub = n.advertise<sensor_msgs::PointCloud2>("/edge_cloud", 1000);
+    sensor_msgs::PointCloud2 edge_msg;
+
+    cout<< "Enter threshold distance" << endl;
+    float thresholdDistance = 1;
+    cin >> thresholdDistance;
+    int K = 20;
+    cout<<"Enter K: "<<endl;
+    cin >> K;
+
     while (ros::ok())
     {
-        map_pub.publish(map_msg);
+        edge_extract(K, thresholdDistance);
+        pcl::toROSMsg(*edge_cld.get(), edge_msg );
+        edge_msg.header.frame_id = "velodyne";
+        map_pub.publish(edge_msg);
         //cout<<object_msg;
-	    // ros::spinOnce();
-        break;
+	    ros::spinOnce();
+        // break;
     }
 	return 0;
 }

@@ -70,8 +70,8 @@ int main(int argc, char** argv)
               0,   1,    0,  0,
               0,   0,   1,    0,
               0,            0,          0,       1; 
-      Tm <<     1,   0,   0,  transform1.getOrigin().x(),
-              0,   1,    0,  transform1.getOrigin().y(),
+      Tm <<     0,   1,   0,  transform1.getOrigin().x(),
+              -1,   0,    0,  transform1.getOrigin().y(),
               0,   0,   1,    0, //transform1.getOrigin().z(),
               0,            0,          0,       1; 
       Rm(0,0)=cos(y)*cos(p);
