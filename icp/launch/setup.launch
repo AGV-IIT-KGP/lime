@@ -1,0 +1,9 @@
+<launch>
+
+<param name="use_sim_time"  value="true" />
+
+<node pkg="icp" type="icp" name="encoder" output="screen"/>
+<node pkg="tf_eklavya" type="tf_eklavya" name="tf.launch" output="screen"/>
+<node pkg="robot_localization" type="robot_localization" name="dual_ekf_navsat.launch" output="screen"/>
+
+</launch>

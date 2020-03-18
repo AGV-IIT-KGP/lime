@@ -1,6 +1,6 @@
 readingDataPointsFilters:
   - RandomSamplingDataPointsFilter:
-      prob: 0.8
+      prob: 0.99
 
 referenceDataPointsFilters:
   - SamplingSurfaceNormalDataPointsFilter:
@@ -12,18 +12,18 @@ matcher:
 
 outlierFilters:
   - TrimmedDistOutlierFilter:
-      ratio: 0.9
+      ratio: 0.7
 
 errorMinimizer:
   PointToPlaneErrorMinimizer
 
 transformationCheckers:
   - CounterTransformationChecker:
-      maxIterationCount: 50
+      maxIterationCount: 70
   - DifferentialTransformationChecker:
-      minDiffRotErr: 0.01
-      minDiffTransErr: 0.1
-      smoothLength: 50
+      minDiffRotErr: 2 
+      minDiffTransErr: 20
+      smoothLength: 5
 
 inspector:
   VTKFileInspector:

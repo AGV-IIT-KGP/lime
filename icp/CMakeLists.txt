@@ -216,12 +216,12 @@ target_link_libraries(pcl_2_laser
   ${roslib_LIBRARIES}
   ${PCL_LIBRARIES}
 )
-add_executable(new_icp src/new_icp.cpp)
-target_link_libraries(new_icp
-  ${catkin_LIBRARIES}
-  ${roslib_LIBRARIES}
-  ${PCL_LIBRARIES}
-)
+# add_executable(new_icp src/new_icp.cpp)
+# target_link_libraries(new_icp
+#   ${catkin_LIBRARIES}
+#   ${roslib_LIBRARIES}
+#   ${PCL_LIBRARIES}
+# )
 add_executable(pcl_ros_icp src/pcl_ros_icp.cpp)
 target_link_libraries(pcl_ros_icp
   ${catkin_LIBRARIES}
@@ -286,4 +286,15 @@ target_link_libraries(encoder
   ${roslib_LIBRARIES}
   ${PCL_LIBRARIES}
   ${OpenCV_LIBRARIES}
+)
+add_executable(correction_maintainer src/correction_maintainer.cpp)
+target_link_libraries(correction_maintainer
+  ${catkin_LIBRARIES}
+  ${roslib_LIBRARIES}
+)
+add_executable(shift_points_2 src/shift_points_2.cpp)
+target_link_libraries(shift_points_2
+  ${catkin_LIBRARIES}
+  ${roslib_LIBRARIES}
+  ${PCL_LIBRARIES}
 )

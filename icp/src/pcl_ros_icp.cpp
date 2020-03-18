@@ -99,7 +99,7 @@ int main (int argc, char** argv)
 	ros::init(argc, argv, "ICP_on_map");
 	ros::NodeHandle n;
     cout<<endl<<"adada"<<endl;
-    pcl::io::loadPCDFile<pcl::PointXYZ> ("/home/shreyanshdarshan/Localization/catkin_ws/src/premapped_localization/icp/src/map.pcd", *cloud_out);
+    pcl::io::loadPCDFile<pcl::PointXYZ> ("/media/shreyanshdarshan/New Volume/vision/PCL/XYZ2PCD/build/pepsi.pcd", *cloud_out);
 	ros::Subscriber sub = n.subscribe("/shifted_points", 1000, pc2_to_pcl_plus_icp);
     ros::Publisher cloud_pub = n.advertise<sensor_msgs::PointCloud2>("/transformed_cloud", 1000);
     //ros::Publisher tf_pub = n.advertise<tf::Transform>("/corr_matrix", 1000);

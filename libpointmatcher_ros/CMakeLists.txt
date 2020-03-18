@@ -43,7 +43,7 @@ if(CMAKE_COMPILER_IS_GNUCXX)
     message(SEND_ERROR "You need GCC version 4.4 or greater to compile this library")
   endif (GCC_VERSION VERSION_GREATER 4.4 OR GCC_VERSION VERSION_EQUAL 4.4)
 else(CMAKE_COMPILER_IS_GNUCXX)
-  message(SEND_ERROR "You need partial C++0x support for N2351, N2672, N1984. Currently this build toolchain supports only GCC >= 4.4. If your compiler supports these specifications, please send us a patch.")
+#   message(SEND_ERROR "You need partial C++0x support for N2351, N2672, N1984. Currently this build toolchain supports only GCC >= 4.4. If your compiler supports these specifications, please send us a patch.")
 endif(CMAKE_COMPILER_IS_GNUCXX)
 
 # well, this breaks libpointmatcher on non-unix platform,
@@ -72,3 +72,9 @@ add_executable(pmicp src/pcl_ros_icp.cpp)
 target_link_libraries(pmicp pointmatcher_ros ${catkin_LIBRARIES} ${libpointmatcher_LIBRARIES} ${PCL_LIBRARIES} ${roslib_LIBRARIES})
 #target_link_libraries(pmicp pointmatcher)
 install(TARGETS pmicp RUNTIME DESTINATION bin)
+
+#target_link_libraries(pointmatcher_ros ${catkin_LIBRARIES} ${libpointmatcher_LIBRARIES})
+add_executable(ICP_new src/icp_lpm.cpp)
+target_link_libraries(ICP_new pointmatcher_ros ${catkin_LIBRARIES} ${libpointmatcher_LIBRARIES} ${PCL_LIBRARIES} ${roslib_LIBRARIES})
+#target_link_libraries(pmicp pointmatcher)
+install(TARGETS ICP_new RUNTIME DESTINATION bin)

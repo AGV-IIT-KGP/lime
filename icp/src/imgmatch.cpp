@@ -21,15 +21,15 @@
 #include <opencv2/calib3d/calib3d.hpp>
 
 #define ORIG_X 200
-#define ORIG_Y 550
-#define SCALE 1.7
+#define ORIG_Y 100
+#define SCALE 1
 
-#define TILE_X 20
-#define TILE_Y 20
-#define M_S_X1 -15
-#define M_S_X2 20
-#define M_S_Y1 -30
-#define M_S_Y2 5
+#define TILE_X 40
+#define TILE_Y 40
+#define M_S_X1 -4
+#define M_S_X2 12
+#define M_S_Y1 -3
+#define M_S_Y2 14
 
 // #define TILE_X 50
 // #define TILE_Y 50
@@ -85,9 +85,10 @@ int main (int argc, char** argv)
 	ros::NodeHandle n;
     cout<<endl<<"adada"<<endl;
     // pcl::io::loadPCDFile<pcl::PointXYZ> ("/home/shreyanshdarshan/Localization/catkin_ws/src/premapped_localization/icp/src/high res map/kitti final map.pcd", *cloud_out);//
-    pcl::io::loadPCDFile<pcl::PointXYZ> ("/home/shreyanshdarshan/Localization/catkin_ws/src/premapped_localization/icp/src/map.pcd", *cloud_out);
+    pcl::io::loadPCDFile<pcl::PointXYZ> ("/media/shreyanshdarshan/New Volume/vision/PCL/XYZ2PCD/build/pepsi_down.pcd", *cloud_out);
     ros::Subscriber sub = n.subscribe("/map_cloud", 1000, pc2_to_pcl_plus_icp);
     ros::Publisher cloud_pub = n.advertise<sensor_msgs::PointCloud2>("/transformed_cloud", 1000);
+    // ros::Publisher grid_pub = n.advertise<sensor_msgs::PointCloud2>("/grid_map", 1000);
     //ros::Publisher tf_pub = n.advertise<tf::Transform>("/corr_matrix", 1000);
     
 
@@ -160,7 +161,7 @@ int main (int argc, char** argv)
             cout<<path<<" ";
             if (Maps[i-M_S_X1][j-M_S_Y1].size())
             {
-                cout<<pcl::io::savePCDFile (path, Maps[i-M_S_X1][j-M_S_Y1])<<endl;
+                cout<<pcl::io::savePCDFileBinary (path, Maps[i-M_S_X1][j-M_S_Y1])<<endl;
             }
         }
     }

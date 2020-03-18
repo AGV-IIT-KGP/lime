@@ -19,8 +19,8 @@
 
 #include <bits/stdc++.h>
 
-#define TILE_X 20
-#define TILE_Y 20
+#define TILE_X 40
+#define TILE_Y 40
 
 using namespace std;
 sensor_msgs::PointCloud2 pcin;
@@ -74,9 +74,12 @@ int main(int argc, char **argv)
     }
   }
 
+  int changed = 0;
+  sensor_msgs::PointCloud2 object_msg;
+
   while (node.ok())
   {
-
+    changed = 0;
     try
     {
       listener.lookupTransform("odom", "base_link", ros::Time(0), transform1);
@@ -93,15 +96,15 @@ int main(int argc, char **argv)
     r = 0;
     p = 0;
     Eigen::Matrix4f Tm, Rm, CummTransform;
-    CummTransform << 1, 0, 0, 0,
-        0, 1, 0, 0,
-        0, 0, 1, 0,
-        0, 0, 0, 1;
-    Rm << 1, 0, 0, 0,
-        0, 1, 0, 0,
-        0, 0, 1, 0,
-        0, 0, 0, 1;
-    Tm << 1, 0, 0, transform1.getOrigin().x(),
+    // CummTransform << 1, 0, 0, 0,
+    //     0, 1, 0, 0,
+    //     0, 0, 1, 0,
+    //     0, 0, 0, 1;
+    // Rm << 1, 0, 0, 0,
+    //     0, 1, 0, 0,
+    //     0, 0, 1, 0,
+    //     0, 0, 0, 1;
+    Rm << 1, 0, 0, transform1.getOrigin().x(),
         0, 1, 0, transform1.getOrigin().y(),
         0, 0, 1, 0, //transform1.getOrigin().z(),
         0, 0, 0, 1;
@@ -118,47 +121,48 @@ int main(int argc, char **argv)
     // pcl_ros::transformPointCloud (Rm, pcin, pcout);
     // pcl_ros::transformPointCloud (Tm, pcout, pcout2);
 
-   /* CummTransform = Tm * (Rm * CummTransform);
+    // CummTransform = Tm * (Rm * CummTransform);
 
-    try
-    {
-      listener.lookupTransform("base_link", "cumm", ros::Time(0), transform2);
-      //cout<<transform.translation.x<<endl<<transform.translation.y<<endl<<endl;
-    }
-    catch (tf::TransformException ex)
-    {
-      ROS_ERROR("%s", ex.what());
-      ros::Duration(1.0).sleep();
-    }
-    Eigen::Matrix4f Tm1, Rm1;
-    m = tf::Matrix3x3(transform2.getRotation());
-    //double r,p,y;
-    m.getRPY(r, p, y);
-    r = 0;
-    p = 0;
-    // Eigen::Matrix4f Tm, Rm;
-    Rm1 << 1, 0, 0, 0,
-        0, 1, 0, 0,
-        0, 0, 1, 0,
-        0, 0, 0, 1;
-    Tm1 << 1, 0, 0, transform2.getOrigin().x(),
-        0, 1, 0, transform2.getOrigin().y(),
-        0, 0, 1, 0, //transform2.getOrigin().z(),
-        0, 0, 0, 1;
-    Rm1(0, 0) = cos(y) * cos(p);
-    Rm1(0, 1) = (cos(y) * sin(p) * sin(r)) - (sin(y) * cos(r));
-    Rm1(0, 2) = (cos(y) * sin(p) * cos(r)) + (sin(y) * sin(r));
-    Rm1(1, 0) = sin(y) * cos(p);
-    Rm1(1, 1) = (sin(y) * sin(p) * sin(r)) + (cos(y) * cos(r));
-    Rm1(1, 2) = (sin(y) * sin(p) * cos(r)) - (cos(y) * sin(r));
-    Rm1(2, 0) = -sin(p);
-    Rm1(2, 1) = cos(p) * sin(r);
-    Rm1(2, 2) = cos(p) * cos(r);
+    // try
+    // {
+    //   listener.lookupTransform("base_link", "cumm", ros::Time(0), transform2);
+    //   //cout<<transform.translation.x<<endl<<transform.translation.y<<endl<<endl;
+    // }
+    // catch (tf::TransformException ex)
+    // {
+    //   ROS_ERROR("%s", ex.what());
+    //   ros::Duration(1.0).sleep();
+    // }
+    // Eigen::Matrix4f Tm1, Rm1;
+    // m = tf::Matrix3x3(transform2.getRotation());
+    // //double r,p,y;
+    // m.getRPY(r, p, y);
+    // r = 0;
+    // p = 0;
+    // // Eigen::Matrix4f Tm, Rm;
+    // // Rm1 << 1, 0, 0, 0,
+    // //     0, 1, 0, 0,
+    // //     0, 0, 1, 0,
+    // //     0, 0, 0, 1;
+    // Rm1 << 1, 0, 0, transform2.getOrigin().x(),
+    //     0, 1, 0, transform2.getOrigin().y(),
+    //     0, 0, 1, 0, //transform2.getOrigin().z(),
+    //     0, 0, 0, 1;
+    // Rm1(0, 0) = cos(y) * cos(p);
+    // Rm1(0, 1) = (cos(y) * sin(p) * sin(r)) - (sin(y) * cos(r));
+    // Rm1(0, 2) = (cos(y) * sin(p) * cos(r)) + (sin(y) * sin(r));
+    // Rm1(1, 0) = sin(y) * cos(p);
+    // Rm1(1, 1) = (sin(y) * sin(p) * sin(r)) + (cos(y) * cos(r));
+    // Rm1(1, 2) = (sin(y) * sin(p) * cos(r)) - (cos(y) * sin(r));
+    // Rm1(2, 0) = -sin(p);
+    // Rm1(2, 1) = cos(p) * sin(r);
+    // Rm1(2, 2) = cos(p) * cos(r);
 
-    CummTransform = Tm1 * (Rm1 * CummTransform);*/
+    // CummTransform = Tm1 * (Rm1 * CummTransform);
+    // Tm1 = Rm1*Rm;
 
-    X_car = Tm(0, 3);
-    Y_car = Tm(1, 3);
+    X_car = Rm(0, 3);
+    Y_car = Rm(1, 3);
 
     // cout<<X_car<<" "<<Y_car<<endl<<Tm<<endl;
 
@@ -183,6 +187,7 @@ int main(int argc, char **argv)
           if (pcl::io::loadPCDFile<pcl::PointXYZ>(path, tempCloud) != -1)
           {
             map_cloud += tempCloud;
+            changed = 1;
           }
         }
       }
@@ -193,8 +198,10 @@ int main(int argc, char **argv)
     N2_prev = N2;
 
     //cout<<transform1.getOrigin().x()<<endl;
-    sensor_msgs::PointCloud2 object_msg;
-    pcl::toROSMsg(map_cloud, object_msg);
+    if (changed == 1)
+    {
+      pcl::toROSMsg(map_cloud, object_msg);
+    }
     object_msg.header.frame_id = "odom";
     cloud_pub.publish(object_msg);
     rate.sleep();

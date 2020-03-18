@@ -141,7 +141,7 @@ pose0_nodelay: false
 
 twist0: example/twist
 twist0_config: [false, false, false,
-                false, false, false,
+                true, true, true,
                 true,  true,  true,
                 false, false, false,
                 false, false, false]
