@@ -30,7 +30,7 @@ Panels:
     Experimental: false
     Name: Time
     SyncMode: 0
-    SyncSource: ""
+    SyncSource: PointCloud2
 Toolbars:
   toolButtonStyle: 2
 Visualization Manager:
@@ -59,11 +59,51 @@ Visualization Manager:
       Frame Timeout: 15
       Frames:
         All Enabled: true
+        Corrected:
+          Value: true
+        CorrectionMatrix:
+          Value: true
+        CummTransformAfterLastICP:
+          Value: true
+        InverseBaseLink_A:
+          Value: true
+        InverseBaseLink_B:
+          Value: true
+        LastCorrect:
+          Value: true
         axle:
           Value: true
         base_footprint:
           Value: true
         base_link:
+          Value: true
+        camera_accel_frame:
+          Value: true
+        camera_accel_optical_frame:
+          Value: true
+        camera_color_frame:
+          Value: true
+        camera_color_optical_frame:
+          Value: true
+        camera_depth_frame:
+          Value: true
+        camera_depth_optical_frame:
+          Value: true
+        camera_gyro_frame:
+          Value: true
+        camera_imu_optical_frame:
+          Value: true
+        camera_infra1_frame:
+          Value: true
+        camera_infra1_optical_frame:
+          Value: true
+        camera_infra2_frame:
+          Value: true
+        camera_infra2_optical_frame:
+          Value: true
+        camera_link:
+          Value: true
+        correction:
           Value: true
         front_axel_link:
           Value: true
@@ -73,13 +113,18 @@ Visualization Manager:
           Value: true
         laser:
           Value: true
+        map:
+          Value: true
+        odom:
+          Value: true
       Marker Scale: 1
       Name: TF
       Show Arrows: true
       Show Axes: true
       Show Names: true
       Tree:
-        {}
+        odom:
+          {}
       Update Interval: 0
       Value: true
     - Alpha: 1
@@ -196,26 +241,21 @@ Visualization Manager:
   Value: true
   Views:
     Current:
-      Class: rviz/Orbit
-      Distance: 183.373306
+      Angle: 0
+      Class: rviz/TopDownOrtho
       Enable Stereo Rendering:
         Stereo Eye Separation: 0.0599999987
         Stereo Focal Distance: 1
         Swap Stereo Eyes: false
         Value: false
-      Focal Point:
-        X: 0
-        Y: 0
-        Z: 0
-      Focal Shape Fixed Size: false
-      Focal Shape Size: 0.0500000007
       Invert Z Axis: false
       Name: Current View
       Near Clip Distance: 0.00999999978
-      Pitch: 1.56979632
+      Scale: 4.58595705
       Target Frame: base_link
-      Value: Orbit (rviz)
-      Yaw: 5.42358065
+      Value: TopDownOrtho (rviz)
+      X: 2.89594126
+      Y: 3.43540549
     Saved: ~
 Window Geometry:
   Displays:
