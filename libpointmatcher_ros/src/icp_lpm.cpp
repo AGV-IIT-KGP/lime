@@ -34,6 +34,9 @@
 #define TILE_X 40
 #define TILE_Y 40
 
+// Todo: check grid mapping
+// Todo: check LastCorrect authenticity
+
 using namespace std;
 using namespace pcl;
 
@@ -55,6 +58,9 @@ typedef PM::Parameters Parameters;
 DP refer;
 DP data;
 PM::ICP icp;
+
+// tf::TransformListener listener;
+// tf::StampedTransform CorrectedForICP;
 
 PM::TransformationParameters parseTranslation(string &translation, const int cloudDimension)
 {
@@ -192,12 +198,15 @@ void do_pcl()
 				  static_cast<float>(correction_matrix(2, 0)), static_cast<float>(correction_matrix(2, 1)), static_cast<float>(correction_matrix(2, 2)));
 
 	tf::Quaternion tfqt;
+	double r, p, y;
+	tf3d.getRPY(r, p, y);
+	tf3d.setRPY (0.0, 0.0, y);
 	tf3d.getRotation(tfqt);
-
 	tf::Transform transform;
 	transform.setOrigin(origin);
 	transform.setRotation(tfqt);
 
+	// br.sendTransform(tf::StampedTransform(CorrectedForICP, ros::Time::now(), "odom", "CorrectedForICP"));
 	br.sendTransform(tf::StampedTransform(transform, ros::Time::now(), "odom", "correction"));
 	if (initializedData.getNbPoints() <= 0)
 	{
@@ -328,13 +337,25 @@ void get_map(int &N1, int &N2, int &N1_prev, int &N2_prev)
 	// loadNewMap();
 	if (N1_prev != N1 || N2_prev != N2)
 	{
-		pcl::toROSMsg(*cloud_out, object_msg);
+		sensor_msgs::PointCloud2 object_msg_new;
+		pcl::toROSMsg(*cloud_out, object_msg_new);
+		refer = PointMatcher_ros::rosMsgToPointMatcherCloud<float>(object_msg_new);
 	}
 }
 
 void pc2_to_pcl_plus_icp(const boost::shared_ptr<const sensor_msgs::PointCloud2> &input)
 {
 	data = PointMatcher_ros::rosMsgToPointMatcherCloud<float>(*input);
+	
+	// try
+	// {
+	// 	listener.lookupTransform("odom", "Corrected",  ros::Time(0), CorrectedForICP);
+	// }
+	// catch (tf::TransformException ex)
+	// {
+	// 	ROS_ERROR("%s",ex.what());
+	// 	ros::Duration(1.0).sleep();
+	// }
 }
 int main(int argc, char **argv)
 {
@@ -342,6 +363,9 @@ int main(int argc, char **argv)
 	ros::NodeHandle n;
 	cout << endl
 		 << "adada" << endl;
+
+	// CorrectedForICP.setIdentity();
+	
 	pcl::io::loadPCDFile<pcl::PointXYZ>("/media/shreyanshdarshan/New Volume/vision/PCL/XYZ2PCD/build/pepsi_down.pcd", *cloud_out);
 	ros::Subscriber sub = n.subscribe("/shifted_points", 1000, pc2_to_pcl_plus_icp);
 	ros::Publisher cloud_pub = n.advertise<sensor_msgs::PointCloud2>("/transformed_cloud", 1000);
@@ -389,10 +413,11 @@ int main(int argc, char **argv)
 	transform.setOrigin(origin);
 	transform.setRotation(tfqt);
 	static tf::TransformBroadcaster br;
-	br.sendTransform(tf::StampedTransform(transform, ros::Time::now(), "odom", "corrected"));
+
+	br.sendTransform(tf::StampedTransform(transform, ros::Time::now(), "odom", "correction"));
 	while (ros::ok())
 	{
-		// get_map(N1, N2, N1_prev, N2_prev);
+		//get_map(N1, N2, N1_prev, N2_prev);
 		// if (N1_prev != N1 || N2_prev != N2)
 		// {
 		// 	cout<<"11111111111111111111111111111111111111"<<endl<<endl;

@@ -92,7 +92,7 @@ int main (int argc, char** argv)
 
 		if (CorrectionMatrix.stamp_ != PrevCorrectionMatrix.stamp_)
 		{
-			multiply_stamped_tfs (CorrectedForICP, CorrectionMatrix, LastCorrect);
+			multiply_stamped_tfs (CorrectionMatrix, CorrectedForICP, LastCorrect);
 			
 			InverseBaseLink_B = InverseBaseLink_A;
 			

@@ -66,8 +66,8 @@ int main(int argc, char **argv)
 			tf::Transform corr;
 			corr.setRotation(yawer);
 			corr.setOrigin(orign);
-			static tf::TransformBroadcaster br;
-			br.sendTransform(tf::StampedTransform(corr, ros::Time::now(), "/odom", "correction"));
+			// static tf::TransformBroadcaster br;
+			// br.sendTransform(tf::StampedTransform(corr, ros::Time::now(), "/odom", "correction"));
 
 			cout << endl
 				 << "corrected" << endl;

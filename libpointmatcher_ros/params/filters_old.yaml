@@ -1,6 +1,6 @@
 readingDataPointsFilters:
   - RandomSamplingDataPointsFilter:
-      prob: 0.8
+      prob: 0.99
 
 referenceDataPointsFilters:
   - SamplingSurfaceNormalDataPointsFilter:
@@ -8,7 +8,7 @@ referenceDataPointsFilters:
 
 matcher:
   KDTreeMatcher:
-    knn: 1
+    knn: 10
 
 outlierFilters:
   - TrimmedDistOutlierFilter:
@@ -19,11 +19,11 @@ errorMinimizer:
 
 transformationCheckers:
   - CounterTransformationChecker:
-      maxIterationCount: 50
+      maxIterationCount: 70
   - DifferentialTransformationChecker:
-      minDiffRotErr: 0.01
-      minDiffTransErr: 0.1
-      smoothLength: 50
+      minDiffRotErr: 2 
+      minDiffTransErr: 20
+      smoothLength: 5
 
 inspector:
   VTKFileInspector:
