@@ -59,8 +59,7 @@ DP refer;
 DP data;
 PM::ICP icp;
 
-// tf::TransformListener listener;
-// tf::StampedTransform CorrectedForICP;
+tf::StampedTransform CorrectedForICP;
 
 PM::TransformationParameters parseTranslation(string &translation, const int cloudDimension)
 {
@@ -165,6 +164,7 @@ void do_pcl()
 	}
 
 	DP initializedData = rigidTrans->compute(data, initTransfo);
+	br.sendTransform(tf::StampedTransform(CorrectedForICP, ros::Time::now(), "odom", "CorrectedForICP"));
 
 	PM::TransformationParameters T = icp(initializedData, refer);
 	cout << "match ratio: " << icp.errorMinimizer->getWeightedPointUsedRatio() << endl;
@@ -186,7 +186,6 @@ void do_pcl()
 
 	cout << transform_1 << endl;
 	correction_matrix = transform_1;
-	
 
 	tf::Vector3 origin;
 	origin.setValue(static_cast<float>(correction_matrix(0, 3)), static_cast<float>(correction_matrix(1, 3)), 0); //static_cast<float>(correction_matrix(2,3)));
@@ -200,13 +199,12 @@ void do_pcl()
 	tf::Quaternion tfqt;
 	double r, p, y;
 	tf3d.getRPY(r, p, y);
-	tf3d.setRPY (0.0, 0.0, y);
+	tf3d.setRPY(0.0, 0.0, y);
 	tf3d.getRotation(tfqt);
 	tf::Transform transform;
 	transform.setOrigin(origin);
 	transform.setRotation(tfqt);
 
-	// br.sendTransform(tf::StampedTransform(CorrectedForICP, ros::Time::now(), "odom", "CorrectedForICP"));
 	br.sendTransform(tf::StampedTransform(transform, ros::Time::now(), "odom", "correction"));
 	if (initializedData.getNbPoints() <= 0)
 	{
@@ -346,16 +344,17 @@ void get_map(int &N1, int &N2, int &N1_prev, int &N2_prev)
 void pc2_to_pcl_plus_icp(const boost::shared_ptr<const sensor_msgs::PointCloud2> &input)
 {
 	data = PointMatcher_ros::rosMsgToPointMatcherCloud<float>(*input);
-	
-	// try
-	// {
-	// 	listener.lookupTransform("odom", "Corrected",  ros::Time(0), CorrectedForICP);
-	// }
-	// catch (tf::TransformException ex)
-	// {
-	// 	ROS_ERROR("%s",ex.what());
-	// 	ros::Duration(1.0).sleep();
-	// }
+	static tf::TransformListener listener2;
+
+	try
+	{
+		listener2.lookupTransform("odom", "Corrected",  ros::Time(0), CorrectedForICP);
+	}
+	catch (tf::TransformException ex)
+	{
+		ROS_ERROR("%s",ex.what());
+		ros::Duration(1.0).sleep();
+	}
 }
 int main(int argc, char **argv)
 {
@@ -364,10 +363,10 @@ int main(int argc, char **argv)
 	cout << endl
 		 << "adada" << endl;
 
-	// CorrectedForICP.setIdentity();
-	
+	CorrectedForICP.setIdentity();
+
 	pcl::io::loadPCDFile<pcl::PointXYZ>("/media/shreyanshdarshan/New Volume/vision/PCL/XYZ2PCD/build/pepsi_down.pcd", *cloud_out);
-	ros::Subscriber sub = n.subscribe("/shifted_points", 1000, pc2_to_pcl_plus_icp);
+	ros::Subscriber sub = n.subscribe("/filtered_points", 1000, pc2_to_pcl_plus_icp);
 	ros::Publisher cloud_pub = n.advertise<sensor_msgs::PointCloud2>("/transformed_cloud", 1000);
 	ros::Publisher grid_pub = n.advertise<sensor_msgs::PointCloud2>("/grid_map", 1000);
 
@@ -427,6 +426,7 @@ int main(int argc, char **argv)
 		// N1_prev = N1;
 		// N2_prev = N2;
 		//sensor_msgs::PointCloud2 object_msg;
+
 		do_pcl();
 		//pcl::toROSMsg(*transformed_cloud.get(),object_msg );
 		//transformed_cloud.header.frame_id = "odom";

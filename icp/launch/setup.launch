@@ -9,6 +9,7 @@
 
 <node type="rviz" name="rviz" pkg="rviz" args="-d $(find icp)/rviz/config/icp.rviz" />
 <node pkg="icp" type="shift_points_2" name="shift_points_2" output="screen"/>
+<node pkg="icp" type="filter_points" name="filter_points" output="screen"/>
 <node pkg="icp" type="correction_maintainer" name="correction_maintainer" output="screen"/>
 <node pkg="pcl_ros" type="pcd_to_pointcloud" name="pcd_to_pointcloud" args="/media/shreyanshdarshan/New\ Volume/vision/PCL/XYZ2PCD/build/pepsi_down.pcd 100 _frame_id:=/odom" output="screen"/>
 <node pkg="libpointmatcher_ros" type="ICP_new" name="ICP_new" output="screen"/>

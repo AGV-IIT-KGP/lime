@@ -1,10 +1,10 @@
 readingDataPointsFilters:
   - RandomSamplingDataPointsFilter:
-      prob: 0.8
+      prob: 0.4
 
 referenceDataPointsFilters:
   - SamplingSurfaceNormalDataPointsFilter:
-      knn: 10
+      knn: 20
 
 matcher:
   KDTreeMatcher:

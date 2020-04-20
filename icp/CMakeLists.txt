@@ -259,8 +259,8 @@ target_link_libraries(imgmatch
   ${PCL_LIBRARIES}
   ${OpenCV_LIBRARIES}
 )
-add_executable(groundrem src/groundrem.cpp)
-target_link_libraries(groundrem
+add_executable(filter_points src/filter_points.cpp)
+target_link_libraries(filter_points
   ${catkin_LIBRARIES}
   ${roslib_LIBRARIES}
   ${PCL_LIBRARIES}

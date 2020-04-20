@@ -108,16 +108,26 @@ int main (int argc, char** argv)
 		}
 
 		multiply_stamped_tfs(InverseBaseLink_B, BaseLink, CummTransformAfterLastICP);
-		multiply_stamped_tfs(LastCorrect ,CummTransformAfterLastICP, Corrected);
+		multiply_stamped_tfs(LastCorrect, CummTransformAfterLastICP, Corrected);
 		
 		if (CorrectionMatrix.stamp_ != PrevCorrectionMatrix.stamp_)
 		{
+			// try
+			// {
+			// 	listener.lookupTransform("/odom", "CorrectedForICP",  ros::Time(0), CorrectedForICP);
+			// }
+			// catch (tf::TransformException ex)
+			// {
+			// 	ROS_ERROR("%s",ex.what());
+			// 	ros::Duration(1.0).sleep();
+			// }
 			CorrectedForICP = Corrected;
 		}
 
         br.sendTransform(tf::StampedTransform(Corrected, ros::Time::now(), "odom", "Corrected"));
 		br.sendTransform(tf::StampedTransform(CorrectionMatrix, ros::Time::now(), "odom", "CorrectionMatrix"));
 		br.sendTransform(tf::StampedTransform(LastCorrect, ros::Time::now(), "odom", "LastCorrect"));
+		br.sendTransform(tf::StampedTransform(CorrectedForICP, ros::Time::now(), "odom", "CorrectedForICP_OLD"));
 		// br.sendTransform(tf::StampedTransform(CummTransformAfterLastICP, ros::Time::now(), "LastCorrect", "cummtransform"));
 		br.sendTransform(tf::StampedTransform(CummTransformAfterLastICP, ros::Time::now(), "odom", "CummTransformAfterLastICP"));
 		br.sendTransform(tf::StampedTransform(InverseBaseLink_B, ros::Time::now(), "base_link", "InverseBaseLink_B"));
