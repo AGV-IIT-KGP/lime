@@ -3,12 +3,16 @@
 #include "pointmatcher_ros/point_cloud.h"
 #include "boost/filesystem.hpp"
 
+#include "nabo/nabo.h"
+
 #include <cassert>
 #include <fstream>
 #include <iostream>
 #include <algorithm>
 #include "ros/ros.h"
 #include <tf/transform_broadcaster.h>
+#include <geometry_msgs/Twist.h>
+#include <geometry_msgs/TwistStamped.h>
 #include "sensor_msgs/PointCloud2.h"
 #include <pcl/io/pcd_io.h>
 #include <pcl_conversions/pcl_conversions.h>
@@ -42,9 +46,12 @@ using namespace pcl;
 
 Eigen::Matrix4f correction_matrix;
 
+typedef typename Nabo::NearestNeighbourSearch<float> NNS;
 pcl::PointCloud<pcl::PointXYZ>::Ptr cloud_out(new pcl::PointCloud<pcl::PointXYZ>);
 sensor_msgs::PointCloud2 transformed_cloud;
 sensor_msgs::PointCloud2 object_msg;
+geometry_msgs::TwistStamped ResidualErrorMsg;
+
 int cloudDimension;
 string configFile = "/home/shreyanshdarshan/Localization/catkin_ws/src/premapped_localization/libpointmatcher_ros/params/filters.yaml";
 
@@ -60,6 +67,7 @@ DP data;
 PM::ICP icp;
 
 tf::StampedTransform CorrectedForICP;
+tf::StampedTransform CorrectedForICP_prev;
 
 PM::TransformationParameters parseTranslation(string &translation, const int cloudDimension)
 {
@@ -165,12 +173,17 @@ void do_pcl()
 
 	DP initializedData = rigidTrans->compute(data, initTransfo);
 	br.sendTransform(tf::StampedTransform(CorrectedForICP, ros::Time::now(), "odom", "CorrectedForICP"));
+	br.sendTransform(tf::StampedTransform(CorrectedForICP, ros::Time::now(), "odom", "CorrectedForICP_prev"));
 
 	PM::TransformationParameters T = icp(initializedData, refer);
-	cout << "match ratio: " << icp.errorMinimizer->getWeightedPointUsedRatio() << endl;
+	ResidualErrorMsg.twist.linear.x = icp.errorMinimizer->getWeightedPointUsedRatio();
+	// cout << "error: " << icp.errorMinimizer->getResidualError() << endl;
+	ResidualErrorMsg.header.stamp = ros::Time::now();
+	ResidualErrorMsg.header.frame_id = "odom";
 
 	DP data_out(initializedData);
 	icp.transformations.apply(data_out, T);
+
 	// data_out.save("test_data_out.pcd");
 	cout << "ICP transformation:" << endl
 		 << T << endl;
@@ -213,6 +226,50 @@ void do_pcl()
 	transformed_cloud = PointMatcher_ros::pointMatcherCloudToRosMsg<float>(initializedData, "odom", ros::Time::now());
 	transformed_cloud.header.frame_id = "odom";
 	// pcl::transformPointCloud (*current_lidar, *transformed_cloud, transform_1);
+	
+	/*
+	// PM::Matcher* matcher;
+	// const int knn = 1;
+	// PM::Parameters params;
+	// params["knn"] = PointMatcherSupport::toParam(knn);
+	// // other parameters possible
+
+	// matcher = &(PM::MatcherRegistrar.create("KDTreeMatcher", params));
+	// matcher->init(refer);
+	// PM::Matches matches = matcher->findClosests(data_out);
+
+	NNS* kdtree;
+
+	const int dim = 3;
+	kdtree = NNS::create(refer.features, dim, NNS::KDTREE_LINEAR_HEAP);
+
+	const int knn = 1;
+	PM::Matches matches;
+	PM::Matches::Dists dists(knn, data_out.getNbPoints());
+	PM::Matches::Ids ids(knn, data_out.getNbPoints());
+
+	kdtree->knn(data_out.features.topRows(3), ids, dists, knn);
+	PM::OutlierWeights outlierWeights = icp.outlierFilters.compute(data_out, refer, matches);
+	float error = icp.errorMinimizer->getResidualError(data_out, refer, outlierWeights, matches);
+	*/
+
+	/*
+
+		// To compute residual error:
+		// 1) Set reference cloud in the matcher
+		icp.matcher->init(refer);
+		// 2) Get matches between transformed data and ref
+		PM::Matches matches = icp.matcher->findClosests(data_out);
+		// 3) Get outlier weights for the matches
+		PM::OutlierWeights outlierWeights = icp.outlierFilters.compute(data_out, refer, matches);
+		// 4) Compute error
+		cout<< icp.errorMinimizer->getResidualError(data_out, refer, outlierWeights, matches) <<endl;
+		// ResidualErrorMsg.twist.linear.x = error;
+
+		// // Adding header data to the message
+		// ResidualErrorMsg.header.stamp = ros::Time::now();
+		// ResidualErrorMsg.header.frame_id = "odom";
+	*/
 }
 
 void get_map(int &N1, int &N2, int &N1_prev, int &N2_prev)
@@ -346,6 +403,7 @@ void pc2_to_pcl_plus_icp(const boost::shared_ptr<const sensor_msgs::PointCloud2>
 	data = PointMatcher_ros::rosMsgToPointMatcherCloud<float>(*input);
 	static tf::TransformListener listener2;
 
+	CorrectedForICP_prev = CorrectedForICP;
 	try
 	{
 		listener2.lookupTransform("odom", "Corrected",  ros::Time(0), CorrectedForICP);
@@ -364,11 +422,13 @@ int main(int argc, char **argv)
 		 << "adada" << endl;
 
 	CorrectedForICP.setIdentity();
+	CorrectedForICP_prev.setIdentity();
 
 	pcl::io::loadPCDFile<pcl::PointXYZ>("/media/shreyanshdarshan/New Volume/vision/PCL/XYZ2PCD/build/pepsi_down.pcd", *cloud_out);
 	ros::Subscriber sub = n.subscribe("/filtered_points", 1000, pc2_to_pcl_plus_icp);
 	ros::Publisher cloud_pub = n.advertise<sensor_msgs::PointCloud2>("/transformed_cloud", 1000);
 	ros::Publisher grid_pub = n.advertise<sensor_msgs::PointCloud2>("/grid_map", 1000);
+	ros::Publisher error_pub = n.advertise<geometry_msgs::TwistStamped>("/ResidualError", 1000);
 
 	int N1 = 0, N2 = 0, N1_prev = 0, N2_prev = 0;
 
@@ -431,6 +491,9 @@ int main(int argc, char **argv)
 		//pcl::toROSMsg(*transformed_cloud.get(),object_msg );
 		//transformed_cloud.header.frame_id = "odom";
 		cloud_pub.publish(transformed_cloud);
+
+		// Publishing the error data
+		error_pub.publish(ResidualErrorMsg);
 		ros::spinOnce();
 	}
 	return 0;

@@ -1,10 +1,10 @@
 readingDataPointsFilters:
   - RandomSamplingDataPointsFilter:
-      prob: 0.4
+      prob: 0.8
 
 referenceDataPointsFilters:
   - SamplingSurfaceNormalDataPointsFilter:
-      knn: 20
+      knn: 40
 
 matcher:
   KDTreeMatcher:
@@ -12,17 +12,17 @@ matcher:
 
 outlierFilters:
   - TrimmedDistOutlierFilter:
-      ratio: 0.7
+      ratio: 0.8
 
 errorMinimizer:
-  PointToPlaneErrorMinimizer
+  PointToPointErrorMinimizer
 
 transformationCheckers:
   - CounterTransformationChecker:
       maxIterationCount: 50
   - DifferentialTransformationChecker:
       minDiffRotErr: 0.01
-      minDiffTransErr: 0.1
+      minDiffTransErr: 0.2
       smoothLength: 50
 
 inspector:
@@ -33,4 +33,4 @@ inspector:
      dumpReference : 0
 
 logger:
-  FileLogger
+  NullLogger
