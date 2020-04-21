@@ -223,7 +223,7 @@ void do_pcl()
 	{
 		return;
 	}
-	transformed_cloud = PointMatcher_ros::pointMatcherCloudToRosMsg<float>(initializedData, "odom", ros::Time::now());
+	transformed_cloud = PointMatcher_ros::pointMatcherCloudToRosMsg<float>(data_out, "odom", ros::Time::now());
 	transformed_cloud.header.frame_id = "odom";
 	// pcl::transformPointCloud (*current_lidar, *transformed_cloud, transform_1);
 	

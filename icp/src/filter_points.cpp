@@ -197,8 +197,8 @@ int main(int argc, char **argv)
 
 	while (node.ok())
 	{
-		// cloud_pub.publish(removeGround(extractEdges(voxelFilter(pcin, 0.3, 0.3), 30, 1), zAvg));
-		cloud_pub.publish(removeGround(pcin, zAvg));
+		cloud_pub.publish(removeGround(extractEdges(voxelFilter(pcin, 0.3, 0.3), 30, 1), zAvg));
+		// cloud_pub.publish(removeGround(pcin, zAvg));
 		rate.sleep();
 		ros::spinOnce();
 	}

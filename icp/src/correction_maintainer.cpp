@@ -107,9 +107,6 @@ int main (int argc, char** argv)
 			}
 		}
 
-		multiply_stamped_tfs(InverseBaseLink_B, BaseLink, CummTransformAfterLastICP);
-		multiply_stamped_tfs(LastCorrect, CummTransformAfterLastICP, Corrected);
-		
 		if (CorrectionMatrix.stamp_ != PrevCorrectionMatrix.stamp_)
 		{
 			// try
@@ -123,6 +120,10 @@ int main (int argc, char** argv)
 			// }
 			CorrectedForICP = Corrected;
 		}
+		
+		multiply_stamped_tfs(InverseBaseLink_B, BaseLink, CummTransformAfterLastICP);
+		multiply_stamped_tfs(LastCorrect, CummTransformAfterLastICP, Corrected);
+		
 
         br.sendTransform(tf::StampedTransform(Corrected, ros::Time::now(), "odom", "Corrected"));
 		br.sendTransform(tf::StampedTransform(CorrectionMatrix, ros::Time::now(), "odom", "CorrectionMatrix"));
