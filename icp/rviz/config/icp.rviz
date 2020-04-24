@@ -191,7 +191,7 @@ Visualization Manager:
       Queue Size: 10
       Selectable: true
       Size (Pixels): 1
-      Size (m): 0.5
+      Size (m): 1
       Style: Squares
       Topic: /transformed_cloud
       Unreliable: false
@@ -221,14 +221,14 @@ Visualization Manager:
       Queue Size: 10
       Selectable: true
       Size (Pixels): 2
-      Size (m): 0.5
+      Size (m): 1
       Style: Squares
       Topic: /filtered_points
       Unreliable: false
       Use Fixed Frame: true
       Use rainbow: true
       Value: true
-    - Alpha: 0.0500000007
+    - Alpha: 0.200000003
       Autocompute Intensity Bounds: true
       Autocompute Value Bounds:
         Max Value: 10
@@ -250,7 +250,7 @@ Visualization Manager:
       Position Transformer: XYZ
       Queue Size: 10
       Selectable: true
-      Size (Pixels): 2
+      Size (Pixels): 1
       Size (m): 0.0500000007
       Style: Points
       Topic: /cloud_pcd
@@ -282,7 +282,7 @@ Visualization Manager:
   Value: true
   Views:
     Current:
-      Angle: 0.700000048
+      Angle: 0.690000057
       Class: rviz/TopDownOrtho
       Enable Stereo Rendering:
         Stereo Eye Separation: 0.0599999987
@@ -292,11 +292,11 @@ Visualization Manager:
       Invert Z Axis: false
       Name: Current View
       Near Clip Distance: 0.00999999978
-      Scale: 8.14400196
-      Target Frame: Corrected
+      Scale: 16.2215538
+      Target Frame: <Fixed Frame>
       Value: TopDownOrtho (rviz)
-      X: -24.7739697
-      Y: -19.16535
+      X: 21.8919964
+      Y: 10.2885609
     Saved: ~
 Window Geometry:
   Displays:

@@ -298,3 +298,8 @@ target_link_libraries(shift_points_2
   ${roslib_LIBRARIES}
   ${PCL_LIBRARIES}
 )
+add_executable(error_saver src/error_saver.cpp)
+target_link_libraries(error_saver
+  ${catkin_LIBRARIES}
+  ${roslib_LIBRARIES}
+)

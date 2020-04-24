@@ -1,3 +1,5 @@
+//Author : Shreyansh Darshan ( https://github.com/ShreyanshDarshan )
+
 #include <ros/ros.h>
 #include <boost/assign.hpp>
 #include <geometry_msgs/Twist.h>
@@ -5,6 +7,7 @@
 #include <math.h>
 #include "ros/time.h"
 #include <iostream>
+#include <fstream>
 
 #define fac 1.5
 #define speed 1
@@ -22,66 +25,32 @@ float dist = 1.45;
 
 // For publishing the calculated velocity data
 ros::Publisher odom_pub;
+geometry_msgs::TwistStamped prev_error_msg;
 
 // Subscriber callback function
 // Accepts geometry_msgs::Twist message containing encoder data
 // Calculates the linear and angular velocity from encoder data. 
-void odomCallback(geometry_msgs::Twist encoder_msg)
+void errorCallback(geometry_msgs::TwistStamped error_msg)
 {
-	// value.linear.x contains left wheel encoder data
-	// value.linear.y contains right wheel odometry data
-	vl = (encoder_msg.linear.x * 5) * fac * speed / 18;
-	vr = (encoder_msg.linear.y * 5) * fac * speed / 18;
-
-	// Calculating linear velocity and storing it in velocity_msg.twist.linear.x for publishing
-	velocity_msg.twist.linear.x = fabs(vl + vr) / 2;
-
-	// Determining turn direction
-	if (vr > vl)
-	{
-		// Calculating turning radius using left and right wheel speeds
-		r = (dist * fabs(vl + vr)) / (2 * (vr - vl));
-
-		// Calculating angular speed in radians per sec and storing it in velocity_msg.twist.angular.z for publishing
-		velocity_msg.twist.angular.z = fabs(vr) * speed / (r + dist / 2);
-	}
-	else
-	{
-		// Calculating turning radius using left and right wheel speeds
-		r = (dist * (vl + vr)) / (2 * (vl - vr));
-
-		// Calculating angular speed in radians per sec and storing it in velocity_msg.twist.angular.z for publishing
-		velocity_msg.twist.angular.z = -fabs(vl) * speed / (r + dist / 2);
-	}
-
-	// Assuming velocity perpendicular to vehicle's heading direction to be zero
-	velocity_msg.twist.linear.y = 0.0;
-	velocity_msg.twist.linear.z = 0.0;
-
-	// Assuming vehicle's pitch and roll to be zero
-	velocity_msg.twist.angular.x = 0.0;
-	velocity_msg.twist.angular.y = 0.0;
-
-	// Adding header data to the message
-	velocity_msg.header.stamp = ros::Time::now();
-	velocity_msg.header.frame_id = "odom";
-
-	// Publishing the velocity data
-	odom_pub.publish(velocity_msg);
+	ofstream ResidualError;
+	ResidualError.open ("/home/shreyanshdarshan/Localization/catkin_ws/ResidualError.txt", ios::out | ios::app);
+	ResidualError << endl << error_msg.header.stamp - prev_error_msg.header.stamp << "\t" << error_msg.twist.linear.x;
+  	ResidualError.close();
+	prev_error_msg = error_msg;
 }
 
 int main(int argc, char **argv)
 {
 	// Initialising the node
-	ros::init(argc, argv, "encoder_data");
+	ros::init(argc, argv, "error_saver");
 	ros::NodeHandle n;
-	
+
+	ofstream ResidualError;
+	ResidualError.open ("/home/shreyanshdarshan/Localization/catkin_ws/ResidualError.txt", ios::out | ios::trunc);	
+	ResidualError.close();
 	// Subscribing the encoder data on /encoders
 	// Also calls callback function which calculates velocity data from encoders
-	ros::Subscriber odom_sub = n.subscribe<geometry_msgs::Twist>("/encoders", 50, odomCallback);
-
-	// Defining message type and topic for publishing
-	odom_pub = n.advertise<geometry_msgs::TwistStamped>("/velocity_can", 50);
+	ros::Subscriber odom_sub = n.subscribe<geometry_msgs::TwistStamped>("/ResidualError", 50, errorCallback);
 
 	while (ros::ok())
 		ros::spin();
