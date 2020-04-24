@@ -1,0 +1,36 @@
+readingDataPointsFilters:
+  - RandomSamplingDataPointsFilter:
+      prob: 0.99
+
+referenceDataPointsFilters:
+  - SamplingSurfaceNormalDataPointsFilter:
+      knn: 10
+
+matcher:
+  KDTreeMatcher:
+    knn: 10
+
+outlierFilters:
+  - TrimmedDistOutlierFilter:
+      ratio: 0.7
+
+errorMinimizer:
+  PointToPlaneErrorMinimizer
+
+transformationCheckers:
+  - CounterTransformationChecker:
+      maxIterationCount: 70
+  - DifferentialTransformationChecker:
+      minDiffRotErr: 2 
+      minDiffTransErr: 20
+      smoothLength: 5
+
+inspector:
+  VTKFileInspector:
+     baseFileName : vissteps
+     dumpDataLinks : 0
+     dumpReading : 0
+     dumpReference : 0
+
+logger:
+  FileLogger
