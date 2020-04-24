@@ -11,5 +11,27 @@ This package has been tested on Ubuntu 16.04 & ROS kinetic.
   - [PCL](https://github.com/PointCloudLibrary/pcl) : [Installation instructions](https://github.com/ethz-asl/libpointmatcher/blob/master/doc/Compilation.md)
   - [libpointmatcher](https://github.com/ethz-asl/libpointmatcher) : [Installation instructions](http://pointclouds.org/downloads/linux.html)
 
-HOW TO USE:
-Clone this repo in the src folder of catkin_ws and then run catkin_make
+Installing this package this package:
+```bash
+cd ~/catkin_ws/src
+git clone https://github.com/ShreyanshDarshan/premapped_localization.git
+
+cd ~/catkin_ws/
+catkin_make
+```
+
+## Examples
+### 1. Using robot_localisation from this package with encoder data.
+In a terminal execute:
+```bash
+cd ~/catkin_ws/
+source devel/setup.bash
+roslaunch icp setup.launch
+```
+If using a bagfile, in a different terminal, run:
+```bash
+rosbag play <path to bagfile>/<bagfile_name>.bag
+```
+Make sure that the encoder data is being published at the topic **/encoders** of message type geometry_msgs/Twist and is of the following format:
+  - twist.linear.x -> left wheel encoder data
+  - twist.linear.y -> right wheel encoder data
