@@ -1,5 +1,5 @@
-# premapped_localization
-***premapped_localization*** is an open source 3D LiDAR-based localisation framework. This framework enables localisation in a premapped environment. Prior mapping can be achieved by using packages like [loam_velodyne](https://github.com/laboshinl/loam_velodyne) and [LeGO_LOAM](https://github.com/RobustFieldAutonomyLab/LeGO-LOAM). Wheel odometry is used to provide high frequency, low accuracy updates which are corrected by low frequency, high accuracy ICP corrections.
+# LIME : Localisation in Mapped Environment
+***LIME*** is an open source 3D LiDAR-based localisation framework. This framework enables localisation in a premapped environment. Prior mapping can be achieved by using packages like [loam_velodyne](https://github.com/laboshinl/loam_velodyne) and [LeGO_LOAM](https://github.com/RobustFieldAutonomyLab/LeGO-LOAM). Wheel odometry is used to provide high frequency, low accuracy updates which are corrected by low frequency, high accuracy ICP corrections.
 
 ![example_image](https://i.ytimg.com/vi/flL5gf0JXh4/maxresdefault.jpg)
 
