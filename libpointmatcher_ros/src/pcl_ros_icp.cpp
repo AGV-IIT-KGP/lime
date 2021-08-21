@@ -1,5 +1,4 @@
 #include "pointmatcher/PointMatcher.h"
-#include "pointmatcher/Bibliography.h"
 #include "pointmatcher_ros/point_cloud.h"
 #include "boost/filesystem.hpp"
 

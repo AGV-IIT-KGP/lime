@@ -9,11 +9,26 @@ This package is built on top of the ROS ecosystem.
 
 This package has been tested on Ubuntu 16.04 & ROS kinetic.
 ## Installation
-***premapped_localization*** depends on the following libraries:
-  - [PCL](https://github.com/PointCloudLibrary/pcl) : [Installation instructions](https://github.com/ethz-asl/libpointmatcher/blob/master/doc/Compilation.md)
-  - [libpointmatcher](https://github.com/ethz-asl/libpointmatcher) : [Installation instructions](http://pointclouds.org/downloads/linux.html)
+***lime*** depends on the following libraries:
+  - [PCL](https://github.com/PointCloudLibrary/pcl) : [Installation instructions](http://pointclouds.org/downloads/linux.html)
+  - [libpointmatcher](https://github.com/ethz-asl/libpointmatcher) : [Installation instructions](https://github.com/ethz-asl/libpointmatcher/blob/master/doc/Compilation.md)
 
-Installing this package this package:
+Additionally, you might need to install these packages:
+```bash
+sudo apt-get install ros-melodic-tf2-sensor-msgs
+sudo apt-get install ros-melodic-geographic-msgs
+sudo apt-get install ros-melodic-move-base
+```
+
+To set up your catkin workspace, run:
+```bash
+mkdir ~/catkin_ws
+cd ~/catkin_ws
+mkdir src
+catkin_make
+```
+
+To build ***lime***, run:
 ```bash
 cd ~/catkin_ws/src
 git clone https://github.com/ShreyanshDarshan/premapped_localization.git
@@ -28,7 +43,7 @@ In a terminal execute:
 ```bash
 cd ~/catkin_ws/
 source devel/setup.bash
-roslaunch icp setup.launch
+roslaunch transform_fusion setup.launch
 ```
 If using a bagfile, in a different terminal, run:
 ```bash
