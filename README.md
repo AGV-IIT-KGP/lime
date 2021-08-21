@@ -7,11 +7,13 @@
 
 This package is built on top of the ROS ecosystem.
 
-This package has been tested on Ubuntu 16.04 & ROS kinetic.
+This package has been tested on 
+- Ubuntu 16.04, ROS kinetic
+- Ubuntu 18.04, ROS melodic
+
 ## Installation
 ***lime*** depends on the following libraries:
-  - [PCL](https://github.com/PointCloudLibrary/pcl) : [Installation instructions](http://pointclouds.org/downloads/linux.html)
-  - [libpointmatcher](https://github.com/ethz-asl/libpointmatcher) : [Installation instructions](https://github.com/ethz-asl/libpointmatcher/blob/master/doc/Compilation.md)
+  - [libpointmatcher](https://github.com/ethz-asl/libpointmatcher) : [Installation instructions](https://libpointmatcher.readthedocs.io/en/stable/Compilation/)
 
 Additionally, you might need to install these packages:
 ```bash
