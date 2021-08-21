@@ -37,8 +37,8 @@ cd ~/catkin_ws/
 catkin_make
 ```
 
-## Examples
-### 1. Using robot_localisation from this package with encoder data.
+## Example
+### Using robot_localisation from this package with encoder data.
 In a terminal execute:
 ```bash
 cd ~/catkin_ws/

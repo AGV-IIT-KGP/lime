@@ -64,42 +64,42 @@ int main(int argc, char **argv) {
 		CorrectionMatrix is updated when a new correction is broadcasted after
 		ICP by listening for a new correction transform every frame
 
-        PrevCorrectionMatrix stores the value of the CorrectionMatrix in the
+    PrevCorrectionMatrix stores the value of the CorrectionMatrix in the
 		previous frame 
 		PrevCorrectionMatrix is updated every frame by inheriting the old 
 		value of CorrectionMatrix. End of an ICP process (and start of a
 		new ICP process) is deternmined by comparing PrevCorrectionMatrix to
 		CorrectionMatrix.
 
-        InverseBaseLink_A stores the inverse of the BaseLink transform when
+    InverseBaseLink_A stores the inverse of the BaseLink transform when
 		the latest ICP (incomplete) process started 
 		InverseBaseLink_A is updated when a new ICP process starts 
 		(and the previous process ends) by listening to the inverse of the 
 		base_link transform at that moment
 
-        InverseBaseLink_B stores the inverse of the BaseLink transform when
+    InverseBaseLink_B stores the inverse of the BaseLink transform when
 		the last completed ICP process had started 
 		InverseBaseLink_B is updated when a new ICP process starts (and the 
 		previous process ends) by inheriting the old value of InverseBaseLink_A
 
-        CummTransformAfterLastICP stores the transformation that the bot has
+    CummTransformAfterLastICP stores the transformation that the bot has
 		traversed since the last completed ICP process relative to the BaseLink
 		transform at the moment when the last completed ICP had just started
-        CummTransformAfterLastICP is updated every frame by multiplying
-     	BaseLink and InverseBaseLink_B
+    CummTransformAfterLastICP is updated every frame by multiplying
+    BaseLink and InverseBaseLink_B
 
-        Corrected stores the final buest guess transform obtained by merging
+    Corrected stores the final best guess transform obtained by merging
 		the corrections of ICP and the wheel odometry data from robot_localization
 		package 
 		Corrected is updated every frame by multiplying the LastCorrect with the 
 		CummTransformAfterLastICP
 
 		LastCorrect stores the last corrected transform that was directly
-     	corrected by ICP 
+    corrected by ICP 
 		LastCorrect is updated when an ICP process ends (and a new one starts) by 
 		multiplying the CorrectionMatrix with the InputForICP
 
-        InputForICP stores input transform that went into the latest ICP process 
+    InputForICP stores input transform that went into the latest ICP process 
 		InputForICP is updated when an ICP process starts (and the previous 
 		process ends) by inheriting the value of Corrected at that moment
   */
