@@ -9,10 +9,10 @@
 
 <node type="rviz" name="rviz" pkg="rviz" args="-d $(find transform_fusion)/rviz/config/icp.rviz" />
 <node pkg="transform_fusion" type="translate_points" name="translate_points" output="screen"/>
-<node pkg="transform_fusion" type="filter_points" name="filter_points" output="screen"/>
+<node pkg="transform_fusion" type="filter_points" name="filter_points" args="-1.6 0.3 30 1" output="screen"/>
 <node pkg="transform_fusion" type="correction_maintainer" name="correction_maintainer" output="screen"/>
-<node pkg="transform_fusion" type="error_saver" name="error_saver"/>
+<node pkg="transform_fusion" type="error_saver" args="/home/shreyanshdarshan/Localization/catkin_ws/ResidualError.txt" name="error_saver"/>
 <node pkg="pcl_ros" type="pcd_to_pointcloud" name="pcd_to_pointcloud" args="/media/shreyanshdarshan/New\ Volume/vision/PCL/XYZ2PCD/build/pepsi_down.pcd 100 _frame_id:=/odom" output="screen"/>
-<node pkg="libpointmatcher_ros" type="ICP_new" name="ICP_new" args="/media/shreyanshdarshan/New\ Volume/vision/PCL/XYZ2PCD/build/pepsi_down.pcd" output="screen"/>
+<node pkg="libpointmatcher_ros" type="icp" name="icp" args="/media/shreyanshdarshan/New\ Volume/vision/PCL/XYZ2PCD/build/pepsi_down.pcd" output="screen"/>
 
 </launch>

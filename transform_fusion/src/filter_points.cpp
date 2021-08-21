@@ -5,7 +5,6 @@
 #include <sensor_msgs/PointCloud2.h>
 #include <sensor_msgs/point_cloud_conversion.h>
 
-//#include <eigen3/Eigen>
 #include <pcl/filters/extract_indices.h>
 #include <pcl/filters/voxel_grid.h>
 #include <pcl/io/pcd_io.h>
@@ -22,16 +21,17 @@
 
 using namespace std;
 
+// Pointcloud for subscribing to input cloud
 sensor_msgs::PointCloud2 pcin;
 
-void get_cloud(const boost::shared_ptr<const sensor_msgs::PointCloud2> &input)
+// Subscriber function to accept input cloud
+void getCloud(const boost::shared_ptr<const sensor_msgs::PointCloud2> &input)
 {
-	// sensor_msgs::PointCloud2 pcin = *input;
-	// sensor_msgs::convertPointCloud2ToPointCloud (temp, pcin);
 	pcin = *input;
 	return;
 }
 
+// Removes ground points from input cloud
 sensor_msgs::PointCloud2 removeGround(sensor_msgs::PointCloud2 input_cloud, int z_thresh)
 {
 	sensor_msgs::PointCloud2 output_cloud;
@@ -45,7 +45,8 @@ sensor_msgs::PointCloud2 removeGround(sensor_msgs::PointCloud2 input_cloud, int 
 	for (int i = 0; i < (*groundless_P).size(); i++)
 	{
 		pcl::PointXYZ pt(groundless_P->points[i].x, groundless_P->points[i].y, groundless_P->points[i].z);
-		if (z_thresh - pt.z > 0) // e.g. remove all pts below zAvg
+		// Remove all pts below z_thresh
+        if (z_thresh - pt.z > 0)
 		{
 			inliers->indices.push_back(i);
 		}
@@ -97,11 +98,6 @@ sensor_msgs::PointCloud2 extractEdges(sensor_msgs::PointCloud2 input_cloud, int 
     pcl::fromPCLPointCloud2(pcl_pc2, *unfiltered);
 	(*edge_cld).clear();
     pcl::fromPCLPointCloud2(pcl_pc2, *unfiltered);
-
-    // pcl::VoxelGrid<pcl::PointXYZ> grid;
-    // grid.setLeafSize (leaf, leaf, leaf);
-    // grid.setInputCloud (unfiltered);
-    // grid.filter (*unfiltered);
     
     pcl::KdTreeFLANN<pcl::PointXYZ> kdtree;
     kdtree.setInputCloud (unfiltered);
@@ -143,15 +139,9 @@ sensor_msgs::PointCloud2 extractEdges(sensor_msgs::PointCloud2 input_cloud, int 
                     if (resCheck < ResDist)
                     {
                         ResDist = resCheck;
-                        // cout<<dist(searchPoint, unfiltered->points[ pointIdxNKNSearch[i] ])<<endl;
                     }
                 }
-                // std::cout << "    "  <<   unfiltered->points[ pointIdxNKNSearch[i] ].x 
-                //         << " " << unfiltered->points[ pointIdxNKNSearch[i] ].y 
-                //         << " " << unfiltered->points[ pointIdxNKNSearch[i] ].z 
-                //         << " (squared distance: " << pointNKNSquaredDistance[i] << ")" << std::endl;
             }
-            // cout<<                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                   endl;
             if (num>0)
             {
                 Centroid.x /= num;
@@ -183,22 +173,31 @@ sensor_msgs::PointCloud2 extractEdges(sensor_msgs::PointCloud2 input_cloud, int 
 int main(int argc, char **argv)
 {
 	tf::StampedTransform transform1;
-	ros::init(argc, argv, "Filter_Cloud");
+	ros::init(argc, argv, "filter_points");
 
 	ros::NodeHandle node;
 
 	ros::Rate rate(1000.0);
 
 	tf::TransformListener listener;
-	ros::Subscriber sub = node.subscribe("/shifted_points", 1000, get_cloud);
+	ros::Subscriber sub = node.subscribe("/shifted_points", 1000, getCloud);
 	ros::Publisher cloud_pub = node.advertise<sensor_msgs::PointCloud2>("/filtered_points", 1000);
 
-	float zAvg = -1.6;
+	float z_thresh = stof(argv[1]);
+	float leaf_size = stof(argv[2]);
+    int K = stoi(argv[3]);
+    int edge_thresh_dist = stoi(argv[4]);
 
 	while (node.ok())
 	{
-		cloud_pub.publish(removeGround(extractEdges(voxelFilter(pcin, 0.3, 0.3), 30, 1), zAvg));
-		// cloud_pub.publish(removeGround(pcin, zAvg));
+        // Apply voxel filter on input cloud
+        sensor_msgs::PointCloud2 voxelised_cloud = voxelFilter(pcin, leaf_size, leaf_size);
+        // Apply edge filter on voxelised cloud
+		sensor_msgs::PointCloud2 edge_cloud = extractEdges(voxelised_cloud, K, edge_thresh_dist);
+        // Remove ground on the edge cloud
+        sensor_msgs::PointCloud2 groundless_cloud = removeGround(edge_cloud, z_thresh);
+        // Publish the final cloud
+        cloud_pub.publish(groundless_cloud);
 		rate.sleep();
 		ros::spinOnce();
 	}

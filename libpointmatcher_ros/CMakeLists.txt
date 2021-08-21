@@ -67,14 +67,6 @@ include_directories(
 
 add_library(pointmatcher_ros src/point_cloud.cpp src/transform.cpp)
 
-#target_link_libraries(pointmatcher_ros ${catkin_LIBRARIES} ${libpointmatcher_LIBRARIES})
-add_executable(pmicp src/pcl_ros_icp.cpp)
-target_link_libraries(pmicp pointmatcher_ros ${catkin_LIBRARIES} ${libpointmatcher_LIBRARIES} ${PCL_LIBRARIES} ${roslib_LIBRARIES})
-#target_link_libraries(pmicp pointmatcher)
-install(TARGETS pmicp RUNTIME DESTINATION bin)
-
-#target_link_libraries(pointmatcher_ros ${catkin_LIBRARIES} ${libpointmatcher_LIBRARIES})
-add_executable(ICP_new src/icp_lpm.cpp)
-target_link_libraries(ICP_new pointmatcher_ros ${catkin_LIBRARIES} ${libpointmatcher_LIBRARIES} ${PCL_LIBRARIES} ${roslib_LIBRARIES})
-#target_link_libraries(pmicp pointmatcher)
-install(TARGETS ICP_new RUNTIME DESTINATION bin)
+add_executable(icp src/icp.cpp)
+target_link_libraries(icp pointmatcher_ros ${catkin_LIBRARIES} ${libpointmatcher_LIBRARIES} ${PCL_LIBRARIES} ${roslib_LIBRARIES})
+install(TARGETS icp RUNTIME DESTINATION bin)
